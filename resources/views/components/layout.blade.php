@@ -65,7 +65,7 @@
      class="fixed md:fixed top-0 w-full z-50 bg-transparent dark:bg-transparent shadow-none md:bg-white md:dark:bg-gray-800 md:shadow-sm transition-colors duration-300">
     <div class="container mx-auto px-4">
         <div class="flex items-center justify-between h-16">
-            <div class="flex items-center">
+            <div class="flex items-center pr-2">
                 <a id="mobileBrandLink" href="{{ url('/') }}"
                    class="group flex items-center space-x-3 hover:opacity-80 transition-opacity duration-200">
                     <div id="mobileBrandLogoWrap"
