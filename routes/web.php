@@ -144,3 +144,5 @@ Route::resources([
     'teamTable'   => TeamTableController::class,
     'rankings'    => RankingController::class
 ]);
+
+Route::fallback(fn () => redirect('/'));

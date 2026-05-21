@@ -7,6 +7,7 @@ use App\Models\Klasse;
 use App\Models\School;
 use App\Models\Team;
 use App\Models\VisitCounter;
+use Illuminate\Support\Facades\Cache;
 
 class HomeController extends Controller
 {
@@ -37,8 +38,13 @@ class HomeController extends Controller
 
         $comments = Comment::all();
         $visitcount = VisitCounter::first() ?? new VisitCounter();
-        $visitcount->total_visits++;
-        $visitcount->save();
+
+        $ip = request()->ip();
+        if (!Cache::has('visit_ip_' . md5($ip))) {
+            Cache::forever('visit_ip_' . md5($ip), true);
+            $visitcount->total_visits++;
+            $visitcount->save();
+        }
 
         // Diese Werte an 'welcome' übergeben
         return view('welcome', compact(
