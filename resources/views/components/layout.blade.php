@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="de" class="">
 <head>
     <meta charset="utf-8">
@@ -187,8 +187,8 @@
     </div>
 </nav>
 
-{{-- ÄNDERUNG: pt-8 entfernt, damit der Hintergrund ganz oben anschließt --}}
-<main class="relative pt-10">
+
+<main class="relative pt-10 bg-gradient-to-br from-blue-100 to-green-100 overflow-hidden">
     <div class="absolute inset-0 z-0 overflow-hidden pointer-events-none hidden dark:block" aria-hidden="true">
         <div class="parallax-layer absolute inset-0" data-speed="0.12">
             <div class="aurora-sky absolute inset-0"></div>
