@@ -27,6 +27,25 @@
                 </div>
             @endif
 
+            <!-- IP-Filter Banner -->
+            @if($filterIp)
+                <div class="mb-6 p-4 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg flex items-center justify-between transition-colors duration-200">
+                    <div class="flex items-center gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z" />
+                        </svg>
+                        <span class="text-blue-800 dark:text-blue-200 font-medium">IP-Profil: <code class="bg-blue-100 dark:bg-blue-800 px-2 py-0.5 rounded font-mono text-sm">{{ $filterIp }}</code></span>
+                        <span class="text-blue-600 dark:text-blue-400 text-sm">— {{ $stats['total'] }} {{ $stats['total'] === 1 ? 'Kommentar' : 'Kommentare' }}, {{ $stats['blocked'] }} blockiert</span>
+                    </div>
+                    <a href="{{ route('moderation.index') }}" class="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-600 dark:bg-blue-700 text-white text-sm rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                        Filter aufheben
+                    </a>
+                </div>
+            @endif
+
             <!-- Toggle-Button für Kommentare -->
             <div class="mb-6">
                 <form action="{{ route('moderation.toggle') }}" method="POST">
@@ -133,7 +152,30 @@
 
                                 <!-- IP-Adresse -->
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <code class="text-xs bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded font-mono text-gray-700 dark:text-gray-300 transition-colors duration-200">{{ $comment->ip_address ?? 'N/A' }}</code>
+                                    @if($comment->ip_address)
+                                        @php
+                                            $ipStat = $ipStats[$comment->ip_address] ?? null;
+                                            $isRepeat = $ipStat && $ipStat->blocked_count >= 2;
+                                        @endphp
+                                        <div class="flex flex-col gap-1">
+                                            <a href="{{ route('moderation.index', ['ip' => $comment->ip_address]) }}"
+                                               class="text-xs bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded font-mono text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors duration-200 hover:underline">
+                                                {{ $comment->ip_address }}
+                                            </a>
+                                            @if($isRepeat)
+                                                <span class="inline-flex items-center gap-1 text-xs font-medium text-red-700 dark:text-red-400">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                                                    </svg>
+                                                    {{ $ipStat->blocked_count }}× blockiert
+                                                </span>
+                                            @elseif($ipStat && $ipStat->total > 1)
+                                                <span class="text-xs text-gray-400 dark:text-gray-500">{{ $ipStat->total }} Kommentare</span>
+                                            @endif
+                                        </div>
+                                    @else
+                                        <code class="text-xs bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded font-mono text-gray-700 dark:text-gray-300 transition-colors duration-200">N/A</code>
+                                    @endif
                                 </td>
 
                                 <!-- AI-Scores -->

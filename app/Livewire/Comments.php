@@ -6,6 +6,7 @@ use App\Events\CommentPosted;
 use App\Models\Comment;
 use App\Models\Setting;
 use App\Services\PerspectiveService;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -15,6 +16,18 @@ class Comments extends Component
     public $message;
     public $authorName;
     public $commentsToShow = 5;
+    public array $shadowCommentIds = [];
+
+    public function mount(): void
+    {
+        $raw = request()->cookie('shadow_comment_ids');
+        if ($raw) {
+            $ids = json_decode($raw, true);
+            $this->shadowCommentIds = is_array($ids)
+                ? array_values(array_filter($ids, 'is_int'))
+                : [];
+        }
+    }
 
     protected $rules = [
         'message' => 'required|string|max:150|regex:/^[^\r\n]*$/',
@@ -37,7 +50,15 @@ class Comments extends Component
 
     public function render()
     {
-        $commentsQuery = Comment::approved()->latest();
+        $shadowIds = $this->shadowCommentIds;
+
+        $commentsQuery = Comment::where(function ($q) use ($shadowIds) {
+            $q->where('moderation_status', 'approved');
+            if (!empty($shadowIds)) {
+                $q->orWhereIn('id', $shadowIds);
+            }
+        })->latest();
+
         $totalComments = (clone $commentsQuery)->count();
         $visibleComments = $commentsQuery->take($this->commentsToShow)->get();
 
@@ -113,7 +134,14 @@ class Comments extends Component
             } elseif ($moderationStatus === 'pending') {
                 session()->flash('comment_pending', 'Ihr Kommentar wird überprüft und dann freigeschaltet.');
             } else {
-                session()->flash('comment_blocked', 'Ihr Kommentar konnte nicht veröffentlicht werden. Bitte achten Sie auf einen respektvollen Umgangston.');
+                // Shadow Ban: Nutzer denkt der Kommentar ist live
+                $this->shadowCommentIds[] = $comment->id;
+                Cookie::queue(
+                    'shadow_comment_ids',
+                    json_encode($this->shadowCommentIds),
+                    60 * 24 * 30 // 30 Tage
+                );
+                session()->flash('comment_success', 'Kommentar erfolgreich hinzugefügt!');
             }
         } catch (\Exception $e) {
             Log::error('Error storing comment', [

@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 
 class ModerationController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         // Zugriffskontrolle: Nur Admin und Teacher
         if (!auth()->check()) {
@@ -20,21 +20,38 @@ class ModerationController extends Controller
             abort(403, 'Keine Berechtigung für die Moderation');
         }
 
-        // Alle Kommentare mit allen Status (approved, pending, blocked)
-        $comments = Comment::orderBy('created_at', 'desc')
-            ->paginate(20);
+        $filterIp = $request->query('ip');
 
-        // Statistiken
+        $query = Comment::orderBy('created_at', 'desc');
+        if ($filterIp) {
+            $query->where('ip_address', $filterIp);
+        }
+        $comments = $query->paginate(20)->withQueryString();
+
+        // Statistiken (gefiltert oder global)
+        $statsBase = $filterIp
+            ? Comment::where('ip_address', $filterIp)
+            : Comment::query();
+
         $stats = [
-            'total' => Comment::count(),
-            'approved' => Comment::where('moderation_status', 'approved')->count(),
-            'pending' => Comment::where('moderation_status', 'pending')->count(),
-            'blocked' => Comment::where('moderation_status', 'blocked')->count(),
+            'total'    => (clone $statsBase)->count(),
+            'approved' => (clone $statsBase)->where('moderation_status', 'approved')->count(),
+            'pending'  => (clone $statsBase)->where('moderation_status', 'pending')->count(),
+            'blocked'  => (clone $statsBase)->where('moderation_status', 'blocked')->count(),
         ];
+
+        // Pro-IP Statistiken für Wiederholungstäter-Badge (nur in der Gesamtansicht)
+        $ipStats = [];
+        if (!$filterIp) {
+            $ipStats = Comment::selectRaw('ip_address, COUNT(*) as total, SUM(moderation_status = "blocked") as blocked_count')
+                ->groupBy('ip_address')
+                ->get()
+                ->keyBy('ip_address');
+        }
 
         $commentsEnabled = Setting::commentsEnabled();
 
-        return view('moderation.index', compact('comments', 'stats', 'commentsEnabled'));
+        return view('moderation.index', compact('comments', 'stats', 'commentsEnabled', 'filterIp', 'ipStats'));
     }
 
     public function destroy(Comment $comment)
