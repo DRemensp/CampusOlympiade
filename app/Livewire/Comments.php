@@ -115,7 +115,7 @@ class Comments extends Component
                     break;
             }
 
-            Comment::create([
+            $comment = Comment::create([
                 'message' => $this->message,
                 'author_name' => $this->authorName ?: 'Anonym',
                 'ip_address' => request()->ip(),
