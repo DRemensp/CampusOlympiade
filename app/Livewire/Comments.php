@@ -8,6 +8,7 @@ use App\Models\Setting;
 use App\Services\PerspectiveService;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\RateLimiter;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
@@ -50,7 +51,17 @@ class Comments extends Component
 
     public function render()
     {
-        $shadowIds = $this->shadowCommentIds;
+        // Defensiv: Die public Property wird bei Livewire-Updates aus dem Client-Payload
+        // hydriert und kann dabei verschachtelte/ungültige Werte enthalten (manipulierte
+        // oder veraltete Requests). Vor dem Query auf eine flache Integer-Liste reduzieren,
+        // sonst wirft orWhereIn() "Nested arrays may not be passed to whereIn method".
+        $shadowIds = collect(is_array($this->shadowCommentIds) ? $this->shadowCommentIds : [])
+            ->filter(fn ($v) => is_int($v) || (is_string($v) && ctype_digit($v)))
+            ->map(fn ($v) => (int) $v)
+            ->unique()
+            ->values()
+            ->all();
+        $this->shadowCommentIds = $shadowIds;
 
         $commentsQuery = Comment::where(function ($q) use ($shadowIds) {
             $q->where('moderation_status', 'approved');
@@ -82,6 +93,15 @@ class Comments extends Component
             session()->flash('comment_blocked', 'Kommentare sind erst nach Einwilligung und Bestätigung des Hinweises möglich.');
             return;
         }
+
+        // Rate-Limiting gegen Spam/Missbrauch: max. 5 Kommentare pro Minute je IP.
+        $rateKey = 'comment-store:' . request()->ip();
+        if (RateLimiter::tooManyAttempts($rateKey, 5)) {
+            $seconds = RateLimiter::availableIn($rateKey);
+            session()->flash('comment_blocked', "Zu viele Kommentare. Bitte warten Sie {$seconds} Sekunden.");
+            return;
+        }
+        RateLimiter::hit($rateKey, 60);
 
         $this->validate();
 

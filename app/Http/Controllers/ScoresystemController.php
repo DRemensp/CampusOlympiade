@@ -8,8 +8,17 @@ use Illuminate\Http\Request;
 
 class ScoresystemController extends Controller
 {
+    private function ensureAdmin(): void
+    {
+        if (!auth()->check() || !auth()->user()->hasRole('admin')) {
+            abort(403, 'Keine Berechtigung');
+        }
+    }
+
     public function store(Request $request)
     {
+        $this->ensureAdmin();
+
         // Validierung hinzufügen
         $validated = $request->validate([
             'first_place' => 'required|integer|min:0',

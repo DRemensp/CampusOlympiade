@@ -16,14 +16,9 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LaufzettelController;
 use App\Http\Controllers\CertificateController;
 
-Route::get('/dashboard', function () {
-    $user = auth()->user();
-    if ($user->hasRole('admin')) {
-        return redirect('/admin');}
-    elseif ($user->hasRole('teacher')) {
-        return redirect('/teacher');}
-    return app(DashboardController::class)->index(request());
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'home'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
 
 
 Route::view('profile', 'profile')
@@ -53,19 +48,14 @@ Route::view('/cookies', 'legal.cookies')->name('legal.cookies');
 Route::view('/nutzungsbedingungen', 'legal.terms')->name('legal.terms');
 Route::view('/impressum', 'legal.imprint')->name('legal.imprint');
 
-Route::get('/teacher', function () {
-    $user = auth()->user();
-    if (!$user->hasRole('admin') && !$user->hasRole('teacher')) {
-        return redirect('/');}
-    return app(TeacherController::class)->index();
-})->middleware(['auth'])->name('teacher.index');
+Route::get('/teacher', [TeacherController::class, 'index'])
+    ->middleware(['auth', 'role:admin|teacher'])
+    ->name('teacher.index');
 
 
-Route::get('/admin', function () {
-    if (!auth()->user()->hasRole('admin')) {
-        return redirect('/');}
-    return app(AdminController::class)->index();
-})->middleware(['auth'])->name('admin.index');
+Route::get('/admin', [AdminController::class, 'index'])
+    ->middleware(['auth', 'role:admin'])
+    ->name('admin.index');
 
 Route::post('/admin/broadcast', [AdminBroadcastController::class, 'store'])
     ->middleware(['auth'])
@@ -78,7 +68,7 @@ Route::post('/disciplines-teams', [TeamTableController::class, 'storeOrUpdate'])
 
 
 Route::post('/ranking/recalculate', [RankingController::class, 'recalculateAllScores'])
-    ->middleware(['auth'])
+    ->middleware(['auth', 'role:admin'])
     ->name('ranking.recalculate');
 Route::get('/ranking', [RankingController::class, 'index'])
     ->name('ranking.index');
@@ -136,13 +126,12 @@ Route::get('/certificate/generate', [CertificateController::class, 'generate'])
 //nicht wundern wenn manche Index nicht in Ressourcen angezeigt wird, hatte ganz komischen bug und fehler nicht gefunden,
 //also einfach sepperat gemacht
 
-Route::resources([
-    'schools'     => SchoolController::class,
-    'teams'       => TeamController::class,
-    'teachers'    => TeacherController::class,
-    'disciplines' => DisciplineController::class,
-    'teamTable'   => TeamTableController::class,
-    'rankings'    => RankingController::class
-]);
+// Nur die tatsächlich implementierten Resource-Methoden registrieren.
+// Frühere Vollregistrierung erzeugte u.a. ein unauthentifiziertes GET /teachers
+// (Lehrer-Panel) sowie 500er auf nicht existierende Methoden (z.B. GET /teams).
+// teamTable/rankings haben eigene explizite Routen (teamTable.storeOrUpdate, /ranking).
+Route::resource('schools', SchoolController::class)->only(['index', 'store', 'update', 'destroy']);
+Route::resource('disciplines', DisciplineController::class)->only(['index', 'store', 'update', 'destroy']);
+Route::resource('teams', TeamController::class)->only(['store', 'update', 'destroy']);
 
-Route::fallback(fn () => redirect('/'));
+Route::fallback([HomeController::class, 'fallback']);

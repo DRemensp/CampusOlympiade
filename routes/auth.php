@@ -5,8 +5,12 @@ use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
 Route::middleware('guest')->group(function () {
-    Volt::route('register', 'pages.auth.register')
-        ->name('register');
+    // Öffentliche Selbst-Registrierung ist deaktiviert: Alle Accounts
+    // (Admin, Lehrer, Klassen-Accounts) werden serverseitig angelegt
+    // (Seeder bzw. beim Erstellen einer Klasse). Ein offener /register-
+    // Endpunkt erlaubt sonst jedem einen eingeloggten Account.
+    // Zum Reaktivieren die folgende Zeile wieder einkommentieren:
+    // Volt::route('register', 'pages.auth.register')->name('register');
 
     Volt::route('login', 'pages.auth.login')
         ->name('login');

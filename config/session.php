@@ -169,7 +169,9 @@ return [
     |
     */
 
-    'secure' => env('SESSION_SECURE_COOKIE'),
+    // Standardmäßig in Produktion erzwingen (Secure-Flag), lokal über HTTP weiterhin nutzbar.
+    // Per SESSION_SECURE_COOKIE in der .env explizit überschreibbar.
+    'secure' => env('SESSION_SECURE_COOKIE', env('APP_ENV') === 'production'),
 
     /*
     |--------------------------------------------------------------------------

@@ -55,4 +55,13 @@ class HomeController extends Controller
             'comments',
             'visitcount'));
     }
+
+    /**
+     * Fallback für unbekannte URLs: zurück zur Startseite.
+     * Als Controller-Action (statt Closure), damit route:cache funktioniert.
+     */
+    public function fallback()
+    {
+        return redirect('/');
+    }
 }

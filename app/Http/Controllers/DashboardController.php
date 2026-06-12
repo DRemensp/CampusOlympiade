@@ -11,6 +11,24 @@ use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
+    /**
+     * Einstieg nach Login: Admins/Lehrer auf ihr Panel umleiten,
+     * Klassen-Accounts erhalten das normale Dashboard.
+     */
+    public function home(Request $request)
+    {
+        $user = Auth::user();
+
+        if ($user->hasRole('admin')) {
+            return redirect('/admin');
+        }
+        if ($user->hasRole('teacher')) {
+            return redirect('/teacher');
+        }
+
+        return $this->index($request);
+    }
+
     public function index(Request $request)
     {
         // Aktuell eingeloggten User holen

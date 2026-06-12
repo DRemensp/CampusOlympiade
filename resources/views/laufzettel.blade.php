@@ -354,10 +354,10 @@
     @if(isset($teamsForJs) && isset($colorMapForJs))
         <script>
             // Daten für JavaScript verfügbar machen
-            const allTeamsData = @json($teamsForJs);
+            const allTeamsData = @json($teamsForJs, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
             const colorMap = @json($colorMapForJs);
             const isAdmin = @json($isAdmin ?? false);
-            const teamMembers = @json($selectedTeam->members ?? null);
+            const teamMembers = @json($selectedTeam->members ?? null, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
         </script>
     @endif
 

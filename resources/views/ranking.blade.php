@@ -385,9 +385,9 @@
     <!-- JavaScript für Tab-Navigation und externe Suchfunktionalität -->
     <script>
         // Daten für laufzettel-search.js bereitstellen
-        const allTeamsData = @json($teamsForJs ?? []);
+        const allTeamsData = @json($teamsForJs ?? [], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
         const colorMap = @json($colorMapForJs ?? ['default' => []]);
-        const disciplineDetails = @json($disciplineDetailsForJs ?? []);
+        const disciplineDetails = @json($disciplineDetailsForJs ?? [], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
 
         // Tab Navigation
         function showSection(sectionName) {

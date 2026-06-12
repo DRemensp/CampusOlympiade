@@ -14,6 +14,13 @@ use Carbon\Carbon;
 
 class ArchiveController extends Controller
 {
+    private function ensureAdmin(): void
+    {
+        if (!auth()->check() || !auth()->user()->hasRole('admin')) {
+            abort(403, 'Keine Berechtigung');
+        }
+    }
+
     public function index()
     {
         $archives = Cache::remember('archive_index', 86400, function () {
@@ -30,6 +37,8 @@ class ArchiveController extends Controller
 
     public function store(Request $request)
     {
+        $this->ensureAdmin();
+
         $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string'
@@ -52,6 +61,8 @@ class ArchiveController extends Controller
 
     public function destroy(Archive $archive)
     {
+        $this->ensureAdmin();
+
         $archive->delete();
 
         Cache::forget('archive_index');
