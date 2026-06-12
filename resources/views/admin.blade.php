@@ -50,80 +50,19 @@
                 {{-- Admin Kachelmenü + Panels --}}
                 <div x-data="{
                          activePanel: null,
-                         deleteModal: { open: false, message: '', pendingForm: null },
                          openPanel(name) {
                              this.activePanel = name;
-                             const url = name ? ('?panel=' + name) : '?';
-                             history.pushState({ adminPanel: name }, '', url);
+                             history.pushState({ adminPanel: name }, '');
                              window.scrollTo({ top: 0, behavior: 'smooth' });
-                         },
-                         confirmDelete(form, message) {
-                             this.deleteModal.message = message;
-                             this.deleteModal.pendingForm = form;
-                             this.deleteModal.open = true;
-                         },
-                         executeDelete() {
-                             if (this.deleteModal.pendingForm) {
-                                 this.deleteModal.pendingForm.submit();
-                             }
-                             this.deleteModal.open = false;
                          }
                      }"
                      x-init="
-                         const params = new URLSearchParams(window.location.search);
-                         const panel = params.get('panel');
-                         if (panel) {
-                             activePanel = panel;
-                         } else {
-                             history.replaceState({ adminPanel: null }, '', '?');
-                         }
+                         history.replaceState({ adminPanel: null }, '');
                          window.addEventListener('popstate', (e) => {
                              activePanel = (e.state && e.state.adminPanel) ? e.state.adminPanel : null;
                              window.scrollTo({ top: 0, behavior: 'smooth' });
                          });
                      ">
-
-                    {{-- Lösch-Bestätigungsdialog --}}
-                    <div x-show="deleteModal.open"
-                         x-transition:enter="transition ease-out duration-200"
-                         x-transition:enter-start="opacity-0"
-                         x-transition:enter-end="opacity-100"
-                         x-transition:leave="transition ease-in duration-150"
-                         x-transition:leave-start="opacity-100"
-                         x-transition:leave-end="opacity-0"
-                         class="fixed inset-0 z-50 flex items-center justify-center p-4"
-                         style="display: none;">
-                        <div class="absolute inset-0 bg-black/50 dark:bg-black/70" @click="deleteModal.open = false"></div>
-                        <div x-transition:enter="transition ease-out duration-200"
-                             x-transition:enter-start="opacity-0 scale-95"
-                             x-transition:enter-end="opacity-100 scale-100"
-                             x-transition:leave="transition ease-in duration-150"
-                             x-transition:leave-start="opacity-100 scale-100"
-                             x-transition:leave-end="opacity-0 scale-95"
-                             class="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl dark:shadow-gray-900/80 border border-gray-200 dark:border-gray-600 p-6 w-full max-w-md">
-                            <div class="flex items-start gap-4">
-                                <div class="flex-shrink-0 flex items-center justify-center w-11 h-11 rounded-full bg-red-100 dark:bg-red-900/40">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
-                                    </svg>
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <h3 class="text-base font-semibold text-gray-900 dark:text-gray-100 mb-1">Wirklich löschen?</h3>
-                                    <p class="text-sm text-gray-600 dark:text-gray-400" x-text="deleteModal.message"></p>
-                                </div>
-                            </div>
-                            <div class="mt-5 flex gap-3 justify-end">
-                                <button @click="deleteModal.open = false"
-                                        class="px-4 py-2 rounded-lg text-sm font-medium bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-150">
-                                    Abbrechen
-                                </button>
-                                <button @click="executeDelete()"
-                                        class="px-4 py-2 rounded-lg text-sm font-medium bg-red-600 dark:bg-red-700 text-white hover:bg-red-700 dark:hover:bg-red-600 transition-colors duration-150 shadow-sm">
-                                    Löschen
-                                </button>
-                            </div>
-                        </div>
-                    </div>
 
                     {{-- Kachelmenü --}}
                     <div x-show="activePanel === null"
@@ -306,11 +245,11 @@
                                             <li class="bg-white night-card dark:bg-gray-700 p-3 rounded shadow-sm dark:shadow-gray-900/50 border border-gray-100 dark:border-gray-600 transition-colors duration-300">
                                                 <div class="flex items-center justify-between gap-3">
                                                     <span class="text-gray-700 dark:text-gray-200 transition-colors duration-300">{{ $school->name }}</span>
-                                                    <form action="{{ route('schools.destroy', $school->id) }}" method="POST">
+                                                    <form action="{{ route('schools.destroy', $school->id) }}" method="POST"
+                                                          onsubmit="return confirm('Schule {{ $school->name }} wirklich löschen? Alle zugehörigen Klassen, Teams und Disziplinen werden ebenfalls gelöscht!');">
                                                         @csrf
                                                         @method('DELETE')
-                                                        <button type="button"
-                                                                @click="confirmDelete($el.closest('form'), 'Schule „{{ addslashes($school->name) }}" löschen? Alle zugehörigen Klassen, Teams und Disziplinen werden ebenfalls gelöscht.')"
+                                                        <button type="submit"
                                                                 class="text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-colors duration-150 p-1 rounded hover:bg-red-100 dark:hover:bg-red-900/30"
                                                                 title="Schule löschen">
                                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -372,11 +311,11 @@
                                                         <br>
                                                         <span class="text-xs text-blue-500 dark:text-blue-400 ml-2 transition-colors duration-300">Password: {{ $klasse->password }}</span>
                                                     </div>
-                                                    <form action="{{ route('klasses.destroy', $klasse->id) }}" method="POST">
+                                                    <form action="{{ route('klasses.destroy', $klasse->id) }}" method="POST"
+                                                          onsubmit="return confirm('Klasse {{ $klasse->name }} wirklich löschen? Alle zugehörigen Teams und Disziplinen werden ebenfalls gelöscht!');">
                                                         @csrf
                                                         @method('DELETE')
-                                                        <button type="button"
-                                                                @click="confirmDelete($el.closest('form'), 'Klasse „{{ addslashes($klasse->name) }}" löschen? Alle zugehörigen Teams und Disziplinen werden ebenfalls gelöscht.')"
+                                                        <button type="submit"
                                                                 class="text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-colors duration-150 p-1 rounded hover:bg-red-100 dark:hover:bg-red-900/30"
                                                                 title="Klasse löschen">
                                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -442,11 +381,11 @@
                                                         <span class="text-gray-700 dark:text-gray-200 transition-colors duration-300">{{ $team->name }}</span>
                                                         <span class="text-xs text-gray-500 dark:text-gray-400 ml-2 transition-colors duration-300">({{ $team->klasse->name ?? 'Keine Klasse' }})</span>
                                                     </div>
-                                                    <form action="{{ route('teams.destroy', $team->id) }}" method="POST">
+                                                    <form action="{{ route('teams.destroy', $team->id) }}" method="POST"
+                                                          onsubmit="return confirm('Team {{ $team->name }} wirklich löschen?');">
                                                         @csrf
                                                         @method('DELETE')
-                                                        <button type="button"
-                                                                @click="confirmDelete($el.closest('form'), 'Team „{{ addslashes($team->name) }}" löschen?')"
+                                                        <button type="submit"
                                                                 class="text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-colors duration-150 p-1 rounded hover:bg-red-100 dark:hover:bg-red-900/30"
                                                                 title="Team löschen">
                                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -521,11 +460,11 @@
                                                             <p class="text-xs text-red-500 dark:text-red-400 transition-colors duration-300">Niedriger ist besser</p>
                                                         @endif
                                                     </div>
-                                                    <form action="{{ route('disciplines.destroy', $discipline->id) }}" method="POST">
+                                                    <form action="{{ route('disciplines.destroy', $discipline->id) }}" method="POST"
+                                                          onsubmit="return confirm('Disziplin {{ $discipline->name }} wirklich löschen?');">
                                                         @csrf
                                                         @method('DELETE')
-                                                        <button type="button"
-                                                                @click="confirmDelete($el.closest('form'), 'Disziplin „{{ addslashes($discipline->name) }}" löschen?')"
+                                                        <button type="submit"
                                                                 class="text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-colors duration-150 p-1 rounded hover:bg-red-100 dark:hover:bg-red-900/30"
                                                                 title="Disziplin löschen">
                                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -626,11 +565,11 @@
                                                         @endif
                                                     </div>
                                                 </div>
-                                                <form action="{{ route('archive.destroy', $archive->id) }}" method="POST">
+                                                <form action="{{ route('archive.destroy', $archive->id) }}" method="POST"
+                                                      onsubmit="return confirm('Archiv {{ $archive->name }} wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden!');">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="button"
-                                                            @click="confirmDelete($el.closest('form'), 'Archiv „{{ addslashes($archive->name) }}" löschen? Diese Aktion kann nicht rückgängig gemacht werden.')"
+                                                    <button type="submit"
                                                             class="text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-colors duration-150 p-1 rounded hover:bg-red-100 dark:hover:bg-red-900/30"
                                                             title="Archiv löschen">
                                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
