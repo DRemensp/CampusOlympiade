@@ -148,7 +148,7 @@
 
                     {{-- Zurück-Button (sichtbar wenn Panel offen) --}}
                     <div x-show="activePanel !== null" class="mb-6">
-                        <button @click="history.back()"
+                        <button @click="activePanel = null; history.pushState({ adminPanel: null }, '', '?')"
                             class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-400 dark:hover:border-gray-500 transition-all duration-200 shadow-sm font-medium text-sm">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
