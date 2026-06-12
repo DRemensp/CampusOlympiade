@@ -52,12 +52,15 @@
                          activePanel: null,
                          openPanel(name) {
                              this.activePanel = name;
-                             history.pushState({ adminPanel: name }, '');
+                             history.pushState({ adminPanel: name }, '', '?panel=' + name);
                              window.scrollTo({ top: 0, behavior: 'smooth' });
                          }
                      }"
                      x-init="
-                         history.replaceState({ adminPanel: null }, '');
+                         const panel = new URLSearchParams(window.location.search).get('panel');
+                         if (panel) {
+                             activePanel = panel;
+                         }
                          window.addEventListener('popstate', (e) => {
                              activePanel = (e.state && e.state.adminPanel) ? e.state.adminPanel : null;
                              window.scrollTo({ top: 0, behavior: 'smooth' });
