@@ -43,6 +43,10 @@ require __DIR__.'/auth.php';
 Route::get('/', [HomeController::class, 'index'])
     ->name('welcome');
 
+Route::get('/home/live', [HomeController::class, 'liveData'])
+    ->middleware('throttle:60,1')
+    ->name('home.live');
+
 Route::view('/datenschutz', 'legal.privacy')->name('legal.privacy');
 Route::view('/cookies', 'legal.cookies')->name('legal.cookies');
 Route::view('/nutzungsbedingungen', 'legal.terms')->name('legal.terms');

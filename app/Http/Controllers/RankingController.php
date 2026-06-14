@@ -157,6 +157,7 @@ class RankingController extends Controller
     {
         Cache::forget('ranking_data');
         Cache::forget('laufzettel_index');
+        Cache::forget('home_live_data');
 
         Team::query()->update(['score' => 0]);
         Klasse::query()->update(['score' => 0]);

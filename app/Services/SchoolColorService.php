@@ -15,6 +15,7 @@ class SchoolColorService
             'text-points' => 'text-blue-800 dark:text-blue-200',
             'text-hover' => 'hover:text-blue-900 dark:hover:text-blue-200',
             'border-hover' => 'hover:border-blue-700 dark:hover:border-blue-300',
+            'dot' => 'bg-blue-500',
             'gradient' => 'from-blue-50 to-blue-300 dark:from-blue-500/20 dark:to-blue-400/5'
         ],
         2 => [
@@ -27,6 +28,7 @@ class SchoolColorService
             'text-points' => 'text-orange-800 dark:text-orange-200',
             'text-hover' => 'hover:text-orange-900 dark:hover:text-orange-200',
             'border-hover' => 'hover:border-orange-700 dark:hover:border-orange-300',
+            'dot' => 'bg-orange-500',
             'gradient' => 'from-orange-50 to-orange-300 dark:from-orange-500/20 dark:to-orange-400/5'
         ],
         3 => [
@@ -39,6 +41,7 @@ class SchoolColorService
             'text-points' => 'text-green-800 dark:text-green-200',
             'text-hover' => 'hover:text-green-900 dark:hover:text-green-200',
             'border-hover' => 'hover:border-green-700 dark:hover:border-green-300',
+            'dot' => 'bg-green-500',
             'gradient' => 'from-green-50 to-green-300 dark:from-green-500/20 dark:to-green-400/5'
         ],
         4 => [
@@ -51,6 +54,7 @@ class SchoolColorService
             'text-points' => 'text-purple-800 dark:text-purple-200',
             'text-hover' => 'hover:text-purple-900 dark:hover:text-purple-200',
             'border-hover' => 'hover:border-purple-700 dark:hover:border-purple-300',
+            'dot' => 'bg-purple-500',
             'gradient' => 'from-purple-50 to-purple-300 dark:from-purple-500/20 dark:to-purple-400/5'
         ],
         5 => [
@@ -63,6 +67,7 @@ class SchoolColorService
             'text-points' => 'text-yellow-800 dark:text-yellow-200',
             'text-hover' => 'hover:text-yellow-900 dark:hover:text-yellow-200',
             'border-hover' => 'hover:border-yellow-700 dark:hover:border-yellow-300',
+            'dot' => 'bg-yellow-400',
             'gradient' => 'from-yellow-50 to-yellow-300 dark:from-amber-400/20 dark:to-yellow-300/5'
         ],
     ];
@@ -77,6 +82,7 @@ class SchoolColorService
         'text-points' => 'text-gray-800 dark:text-slate-200',
         'text-hover' => 'hover:text-gray-900 dark:hover:text-slate-200',
         'border-hover' => 'hover:border-gray-700 dark:hover:border-slate-400',
+        'dot' => 'bg-gray-400',
         'gradient' => 'from-gray-50 to-gray-100 dark:from-slate-500/15 dark:to-slate-400/5'
     ];
 

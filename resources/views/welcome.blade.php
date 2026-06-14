@@ -1,11 +1,11 @@
 <x-layout>
+    @include('partials.lp-theme')
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Manrope:wght@300;400;500;600;700&display=swap');
 
         .light-mode-only {
             display: block;
         }
-
         .dark-mode-only {
             display: none;
         }
@@ -284,286 +284,417 @@
         }
     </style>
 
-    <div class="light-mode-only">
-        <section class="relative pt-10 pb-16 md:pb-24 overflow-hidden">
+    <div class="light-mode-only -mt-10">
+
+        {{-- ============================ HERO ============================ --}}
+        <section class="lp-sec-paper relative overflow-hidden pt-28 md:pt-36 pb-20 md:pb-28">
+            <div class="lp-lanes absolute inset-0 pointer-events-none" aria-hidden="true"></div>
+            <div class="hidden lg:block absolute -top-12 -right-20 w-[440px] h-[120px] rotate-[-8deg] opacity-70 pointer-events-none"
+                 style="background: var(--lp-gold);" aria-hidden="true"></div>
+
             <div class="container mx-auto px-4 relative z-10">
-                <div class="flex flex-col items-center text-center">
-                    <div class="w-16 h-16 bg-indigo-600 rounded-full flex items-center justify-center mb-6 shadow-lg">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" viewBox="0 0 24 24"
-                             fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                             stroke-linejoin="round">
-                            <circle cx="12" cy="8" r="7"></circle>
-                            <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
-                        </svg>
+                <div class="grid lg:grid-cols-12 gap-14 lg:gap-8 items-center">
+                    <div class="lg:col-span-7">
+                        <div class="lp-kicker lp-reveal">Schulwettkampf · Live-Portal</div>
+
+                        <h1 class="lp-display lp-h1 mt-6">
+                            <span class="block lp-reveal lp-d1">Campus</span>
+                            <span class="block lp-outline lp-reveal lp-d2">Olympiade</span>
+                        </h1>
+
+                        <p class="lp-stamp mt-6 lp-reveal lp-d2">Schneller · Höher · Weiter</p>
+
+                        <p class="lp-muted text-lg md:text-xl max-w-xl mt-6 lp-reveal lp-d3">
+                            Ergebnisse erfassen, Punkte automatisch berechnen, Ranglisten in Echtzeit
+                            verfolgen – das Wettkampfzentrum für Schulen, Klassen und Teams.
+                        </p>
+
+                        <div class="flex flex-wrap gap-4 mt-8 lp-reveal lp-d4">
+                            <a href="{{ url('/ranking') }}" class="lp-btn-primary w-full sm:w-auto justify-center">
+                                Zum Live-Ranking
+                                <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                     stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                    <polyline points="12 5 19 12 12 19"></polyline>
+                                </svg>
+                            </a>
+                            <a href="{{ url('/login') }}" class="lp-btn-ghost w-full sm:w-auto justify-center">
+                                Login für Berechtigte
+                            </a>
+                        </div>
+
+                        <div class="flex flex-wrap gap-2.5 mt-8 lp-reveal lp-d5">
+                            <span class="lp-chip"><span data-lp-stat="schools">{{ $schoolCount }}</span>&nbsp;Schulen am Start</span>
+                            <span class="lp-chip"><span data-lp-stat="teams">{{ $teamCount }}</span>&nbsp;Teams im Rennen</span>
+                            <span class="lp-chip lp-chip-accent"><span class="lp-live-dot" style="background:#fff;"></span> Live ausgewertet</span>
+                        </div>
                     </div>
-                    <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4 leading-tight">
-                        <span class="text-indigo-600">Campus Olympiade</span> - Dein Portal zum Wettbewerb
-                    </h1>
-                    <p class="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-                        Verfolge live die Ranglisten deiner Schule, Klasse und deines Teams. Du kannst dich hier
-                        einloggen, um Ergebnisse einzutragen und den Wettbewerb zu verwalten.
+
+                    {{-- Startnummern-Karte: echtes "Team des Tages", verlinkt auf den Laufzettel --}}
+                    <div class="lg:col-span-5 relative lp-reveal lp-d3 px-4 sm:px-0 pb-8">
+                        <div class="hidden sm:flex flex-col items-center absolute -top-8 right-2 lg:right-4 rotate-6 z-0 lp-card lp-shadow-gold px-6 py-4">
+                            <span class="lp-display text-4xl leading-none">1.</span>
+                            <span class="text-[0.62rem] font-extrabold uppercase tracking-[0.25em] mt-1">Platz</span>
+                        </div>
+
+                        @if ($bibTeam)
+                            <a href="{{ url('/laufzettel/' . $bibTeam->id) }}"
+                               class="lp-bib relative z-10 lp-card lp-shadow max-w-sm mx-auto px-7 pt-7 pb-8 block transition-shadow hover:shadow-none">
+                                <span class="lp-pin absolute top-3 left-3"></span>
+                                <span class="lp-pin absolute top-3 right-3"></span>
+                                <span class="lp-pin absolute bottom-3 left-3"></span>
+                                <span class="lp-pin absolute bottom-3 right-3"></span>
+
+                                <div class="flex items-center justify-between text-[0.62rem] font-extrabold uppercase tracking-[0.22em] lp-muted">
+                                    <span>Team des Tages</span>
+                                    <span>{{ date('Y') }}</span>
+                                </div>
+                                <div class="mt-3 border-t-2 border-dashed lp-bord opacity-20"></div>
+
+                                <p class="lp-display lp-bib-num text-center mt-4">{{ str_pad($bibTeam->id, 3, '0', STR_PAD_LEFT) }}</p>
+                                <p class="text-center font-extrabold uppercase tracking-[0.18em] text-sm mt-2 break-words">
+                                    {{ $bibTeam->name }}@if($bibTeam->klasse) · {{ $bibTeam->klasse->name }}@endif
+                                </p>
+                                <p class="lp-muted text-center text-[0.68rem] font-semibold uppercase tracking-[0.22em] mt-1 break-words">
+                                    Disziplin: {{ $bibTeam->klasse->discipline->name ?? 'wird ausgelost' }}
+                                </p>
+
+                                <div class="lp-barcode mt-6"></div>
+                                <p class="lp-muted text-center text-[0.6rem] font-bold uppercase tracking-[0.2em] mt-3 opacity-70">
+                                    Zum Laufzettel →
+                                </p>
+                            </a>
+                        @else
+                            <div class="lp-bib relative z-10 lp-card lp-shadow max-w-sm mx-auto px-7 pt-7 pb-8">
+                                <span class="lp-pin absolute top-3 left-3"></span>
+                                <span class="lp-pin absolute top-3 right-3"></span>
+                                <span class="lp-pin absolute bottom-3 left-3"></span>
+                                <span class="lp-pin absolute bottom-3 right-3"></span>
+
+                                <div class="flex items-center justify-between text-[0.62rem] font-extrabold uppercase tracking-[0.22em] lp-muted">
+                                    <span>Campus Olympiade</span>
+                                    <span>{{ date('Y') }}</span>
+                                </div>
+                                <div class="mt-3 border-t-2 border-dashed lp-bord opacity-20"></div>
+
+                                <p class="lp-display lp-bib-num text-center mt-4">001</p>
+                                <p class="text-center font-extrabold uppercase tracking-[0.18em] text-sm mt-2">Dein Team?</p>
+                                <p class="lp-muted text-center text-[0.68rem] font-semibold uppercase tracking-[0.22em] mt-1">
+                                    Die Teams werden bald angelegt
+                                </p>
+
+                                <div class="lp-barcode mt-6"></div>
+                            </div>
+                        @endif
+
+                        <div class="absolute -bottom-1 left-6 sm:left-12 rotate-[-4deg] z-20 inline-flex items-center gap-2 border-2 lp-bord rounded-full px-4 py-1.5 text-[0.68rem] font-extrabold uppercase tracking-[0.18em] text-white"
+                             style="background: var(--lp-accent); box-shadow: 4px 4px 0 0 var(--lp-ink);">
+                            <span class="lp-live-dot" style="background:#fff;"></span> Live-Auswertung
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        {{-- ================= ANZEIGETAFEL + LIVE-TICKER ================= --}}
+        <section class="lp-board border-y-2 lp-bord">
+            <div class="lp-tickerbar relative z-10 flex items-stretch border-b border-white/15">
+                <div class="flex items-center gap-2 px-4 py-2.5 text-[0.68rem] font-extrabold uppercase tracking-[0.2em] text-white whitespace-nowrap"
+                     style="background: var(--lp-accent);">
+                    <span class="lp-live-dot" style="background:#fff;"></span> Live-Ticker
+                </div>
+                {{-- Zuletzt eingetragene Ergebnisse – aktualisiert sich per Polling --}}
+                <div class="relative flex-1 overflow-hidden">
+                    <div class="lp-ticker-track" data-lp-ticker>
+                        <div class="flex items-center">
+                            @foreach ($tickerItems as $item)
+                                <span class="lp-tick">{{ $item }}</span>
+                            @endforeach
+                        </div>
+                        <div class="flex items-center" aria-hidden="true">
+                            @foreach ($tickerItems as $item)
+                                <span class="lp-tick">{{ $item }}</span>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container mx-auto px-4 py-12 md:py-16 relative z-10">
+                <div class="flex flex-wrap items-center justify-between gap-4 mb-10">
+                    <div>
+                        <p class="text-[0.65rem] font-extrabold uppercase tracking-[0.3em]" style="color: var(--lp-gold);">
+                            Anzeigetafel
+                        </p>
+                        <h2 class="lp-display lp-h2 text-white mt-2">Die Olympiade in Zahlen</h2>
+                    </div>
+                    <div class="inline-flex items-center gap-3 border border-white/20 rounded-full px-4 py-2 text-[0.68rem] font-bold uppercase tracking-[0.18em] text-white/70">
+                        <span class="lp-live-dot"></span> Live · <span data-lp-clock>--:--</span>&nbsp;Uhr
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-px bg-white/15 border border-white/15">
+                    <div class="px-5 py-7 text-center" style="background: var(--lp-ink);">
+                        <p class="lp-board-num" data-lp-stat="schools">{{ $schoolCount }}</p>
+                        <p class="mt-3 text-[0.62rem] font-bold uppercase tracking-[0.25em] text-white/60">Schulen</p>
+                    </div>
+                    <div class="px-5 py-7 text-center" style="background: var(--lp-ink);">
+                        <p class="lp-board-num" style="color: #fff;" data-lp-stat="klasses">{{ $klasseCount }}</p>
+                        <p class="mt-3 text-[0.62rem] font-bold uppercase tracking-[0.25em] text-white/60">Klassen</p>
+                    </div>
+                    <div class="px-5 py-7 text-center" style="background: var(--lp-ink);">
+                        <p class="lp-board-num" data-lp-stat="teams">{{ $teamCount }}</p>
+                        <p class="mt-3 text-[0.62rem] font-bold uppercase tracking-[0.25em] text-white/60">Teams</p>
+                    </div>
+                    <div class="px-5 py-7 text-center" style="background: var(--lp-ink);">
+                        <p class="lp-board-num" style="color: #fff;" data-lp-stat="students">{{ $studentCount }}</p>
+                        <p class="mt-3 text-[0.62rem] font-bold uppercase tracking-[0.25em] text-white/60">Schüler</p>
+                    </div>
+                    <div class="px-5 py-7 text-center col-span-2 md:col-span-1" style="background: var(--lp-ink);">
+                        <p class="lp-board-num" style="color: var(--lp-accent);" data-lp-stat="visits">{{ number_format($visitcount->total_visits ?? 0, 0, ',', '.') }}</p>
+                        <p class="mt-3 text-[0.62rem] font-bold uppercase tracking-[0.25em] text-white/60">Besuche</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        {{-- ====================== LAUFBAND-DIVIDER ====================== --}}
+        <div class="lp-marquee" aria-hidden="true">
+            <div class="lp-marquee-track">
+                <span class="lp-marquee-item">Schneller&nbsp;✦&nbsp;Höher&nbsp;✦&nbsp;Weiter&nbsp;✦&nbsp;Campus Olympiade&nbsp;✦&nbsp;</span>
+                <span class="lp-marquee-item">Schneller&nbsp;✦&nbsp;Höher&nbsp;✦&nbsp;Weiter&nbsp;✦&nbsp;Campus Olympiade&nbsp;✦&nbsp;</span>
+                <span class="lp-marquee-item">Schneller&nbsp;✦&nbsp;Höher&nbsp;✦&nbsp;Weiter&nbsp;✦&nbsp;Campus Olympiade&nbsp;✦&nbsp;</span>
+                <span class="lp-marquee-item">Schneller&nbsp;✦&nbsp;Höher&nbsp;✦&nbsp;Weiter&nbsp;✦&nbsp;Campus Olympiade&nbsp;✦&nbsp;</span>
+            </div>
+        </div>
+
+        {{-- =========================== PODIUM =========================== --}}
+        <section class="lp-sec-paper relative overflow-hidden py-16 md:py-24">
+            <span class="lp-display lp-outline lp-watermark hidden lg:block absolute -right-6 top-10 pointer-events-none"
+                  aria-hidden="true">{{ date('Y') }}</span>
+
+            <div class="container mx-auto px-4 relative z-10">
+                <div class="text-center max-w-2xl mx-auto mb-14">
+                    <div class="flex justify-center">
+                        <span class="lp-kicker">Momentaufnahme</span>
+                    </div>
+                    <h2 class="lp-display lp-h2 mt-4">Das Podium von heute</h2>
+                    <p class="lp-muted mt-4">
+                        Die aktuelle Top&nbsp;3 der Teamwertung – aktualisiert sich automatisch.
                     </p>
-                    <div class="flex flex-wrap justify-center gap-4 mb-16">
-                        <a href="{{ url('/ranking') }}"
-                           class="inline-flex items-center gap-2 px-8 py-3 bg-indigo-600 text-white text-base font-medium rounded-lg shadow-md hover:bg-indigo-700 hover:shadow-xl hover:-translate-y-1 transition-all duration-200">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none"
-                                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="12" cy="8" r="7"></circle>
-                                <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
-                            </svg>
-                            Ranking ansehen
-                        </a>
-                        <a href="{{ url('/login') }}"
-                           class="inline-flex items-center gap-2 px-8 py-3 bg-white text-indigo-600 text-base font-medium rounded-lg border border-indigo-300 shadow-sm hover:bg-indigo-50 hover:shadow-lg hover:-translate-y-1 transition-all duration-200">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
-                                <polyline points="10 17 15 12 10 7"></polyline>
-                                <line x1="15" y1="12" x2="3" y2="12"></line>
-                            </svg>
-                            Login für Berechtigte
-                        </a>
-                    </div>
+                </div>
 
-                    <div class="w-full max-w-6xl mx-auto relative">
-                        <div class="overflow-hidden rounded-xl">
-                            <div id="slideshow-container-light"
-                                 class="flex transition-transform duration-500 ease-in-out">
-                                <!-- Slide 1 -->
-                                <div class="w-full md:w-1/3 flex-shrink-0 px-2">
-                                    <div
-                                        class="bg-white p-5 rounded-lg shadow-md border border-gray-100 flex flex-col items-center text-center h-full">
-                                        <div
-                                            class="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mb-3">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-600"
-                                                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                <circle cx="12" cy="8" r="7"></circle>
-                                                <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
-                                            </svg>
-                                        </div>
-                                        <h3 class="text-lg font-semibold text-gray-800 mb-2">🏆 Ranking & Live
-                                            Auswertung</h3>
-                                        <ul class="space-y-2 text-left text-sm text-gray-600">
-                                            <li>• Live Ranglisten</li>
-                                            <li>• Suchfunktion & Filter</li>
-                                            <li>• Echtzeit-Platzberechnung</li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <!-- Slide 2 -->
-                                <div class="w-full md:w-1/3 flex-shrink-0 px-2">
-                                    <div
-                                        class="bg-white p-5 rounded-lg shadow-md border border-gray-100 flex flex-col items-center text-center h-full">
-                                        <div
-                                            class="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center mb-3">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-teal-600"
-                                                 fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                <path
-                                                    d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z"/>
-                                                <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                            </svg>
-                                        </div>
-                                        <h3 class="text-lg font-semibold text-gray-800 mb-2">⚙️ Verwaltung &
-                                            Stammdaten</h3>
-                                        <ul class="space-y-2 text-left text-sm text-gray-600">
-                                            <li>• Schulen & Teams verwalten</li>
-                                            <li>• Disziplinen konfigurieren</li>
-                                            <li>• Score-Neuberechnung</li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <!-- Slide 3 -->
-                                <div class="w-full md:w-1/3 flex-shrink-0 px-2">
-                                    <div
-                                        class="bg-white p-5 rounded-lg shadow-md border border-gray-100 flex flex-col items-center text-center h-full">
-                                        <div
-                                            class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-3">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600"
-                                                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
-                                                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
-                                            </svg>
-                                        </div>
-                                        <h3 class="text-lg font-semibold text-gray-800 mb-2">📊 Punkte erfassen</h3>
-                                        <ul class="space-y-2 text-left text-sm text-gray-600">
-                                            <li>• 2 Versuche pro Team</li>
-                                            <li>• Sofortige Aktualisierung</li>
-                                            <li>• Teamverwaltung</li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <!-- Slide 4 -->
-                                <div class="w-full md:w-1/3 flex-shrink-0 px-2">
-                                    <div
-                                        class="bg-white p-5 rounded-lg shadow-md border border-gray-100 flex flex-col items-center text-center h-full">
-                                        <div
-                                            class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-3">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600"
-                                                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                <path
-                                                    d="M3 9.75L12 4l9 5.75V20a1 1 0 0 1-1 1h-5.25a.75.75 0 0 1-.75-.75V13.5h-4.5v6.75a.75.75 0 0 1-.75.75H4a1 1 0 0 1-1-1Z"></path>
-                                            </svg>
-                                        </div>
-                                        <h3 class="text-lg font-semibold text-gray-800 mb-2">🏠 Welcome Page</h3>
-                                        <ul class="space-y-2 text-left text-sm text-gray-600">
-                                            <li>• Live Statistiken</li>
-                                            <li>• Community-Diskussionen</li>
-                                            <li>• Direkter Zugang</li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <!-- Slide 5 -->
-                                <div class="w-full md:w-1/3 flex-shrink-0 px-2">
-                                    <div
-                                        class="bg-white p-5 rounded-lg shadow-md border border-gray-100 flex flex-col items-center text-center h-full">
-                                        <div
-                                            class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mb-3">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-600"
-                                                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                <path d="M9 4h6a2 2 0 0 1 2 2v14l-5-3-5 3V6a2 2 0 0 1 2-2Z"></path>
-                                            </svg>
-                                        </div>
-                                        <h3 class="text-lg font-semibold text-gray-800 mb-2">📋 Laufzettel</h3>
-                                        <ul class="space-y-2 text-left text-sm text-gray-600">
-                                            <li>• Persönliche Übersicht</li>
-                                            <li>• Disziplinen & Fortschritt</li>
-                                            <li>• Aktuelle Platzierungen</li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <!-- Slide 6 -->
-                                <div class="w-full md:w-1/3 flex-shrink-0 px-2">
-                                    <div
-                                        class="bg-white p-5 rounded-lg shadow-md border border-gray-100 flex flex-col items-center text-center h-full">
-                                        <div
-                                            class="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center mb-3">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-amber-600"
-                                                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                <path
-                                                    d="M3 7h18M7 7V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2m-8 8h6M5 7v13a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V7"></path>
-                                            </svg>
-                                        </div>
-                                        <h3 class="text-lg font-semibold text-gray-800 mb-2">📚 Archiv & Historie</h3>
-                                        <ul class="space-y-2 text-left text-sm text-gray-600">
-                                            <li>• Vergangene Wettbewerbe</li>
-                                            <li>• Detaillierte Rankings</li>
-                                            <li>• Historische Statistiken</li>
-                                        </ul>
-                                    </div>
-                                </div>
+                @php
+                    $podiumSlot = fn ($i, $field) => match ($field) {
+                        'name' => $podium[$i]['name'] ?? 'Noch offen',
+                        'meta' => isset($podium[$i])
+                            ? ($podium[$i]['klasse'] . ' · ' . number_format($podium[$i]['score'], 0, ',', '.') . ' Pkt.')
+                            : 'Wertung folgt',
+                        'dot' => \App\Services\SchoolColorService::getColorClasses($podium[$i]['school_id'] ?? 0)['dot'],
+                    };
+                @endphp
+
+                <div class="max-w-3xl mx-auto border-b-2 lp-bord">
+                    <div class="grid grid-cols-3 gap-3 md:gap-6 items-end">
+                        {{-- Platz 2 --}}
+                        <div class="min-w-0">
+                            <div class="lp-card lp-shadow px-2 py-2.5 md:px-4 md:py-3 text-center mb-5 -rotate-1">
+                                <p class="font-extrabold text-sm md:text-base leading-tight break-words"><span class="inline-block w-2 h-2 rounded-full {{ $podiumSlot(1, 'dot') }} border border-black/30 align-middle mr-1" data-lp-podium-dot="1"></span><span data-lp-podium-name="1">{{ $podiumSlot(1, 'name') }}</span></p>
+                                <p class="lp-muted text-[0.6rem] md:text-[0.65rem] font-bold uppercase tracking-[0.18em] mt-0.5 break-words" data-lp-podium-meta="1">{{ $podiumSlot(1, 'meta') }}</p>
+                            </div>
+                            <div class="lp-podium lp-top-silver h-28 md:h-40">
+                                <span class="lp-display lp-outline text-5xl md:text-7xl">2</span>
                             </div>
                         </div>
-                        <div class="flex justify-center mt-6 space-x-2">
-                            <button class="slide-indicator-light w-2.5 h-2.5 rounded-full bg-indigo-600 transition-all"
-                                    data-slide="0"></button>
-                            <button class="slide-indicator-light w-2.5 h-2.5 rounded-full bg-gray-300 transition-all"
-                                    data-slide="1"></button>
-                            <button class="slide-indicator-light w-2.5 h-2.5 rounded-full bg-gray-300 transition-all"
-                                    data-slide="2"></button>
-                            <button class="slide-indicator-light w-2.5 h-2.5 rounded-full bg-gray-300 transition-all"
-                                    data-slide="3"></button>
+                        {{-- Platz 1 --}}
+                        <div class="min-w-0">
+                            <div class="text-center mb-3" aria-hidden="true">
+                                <span class="lp-display text-2xl md:text-3xl" style="color: var(--lp-gold); -webkit-text-stroke: 1.5px var(--lp-ink);">★</span>
+                            </div>
+                            <div class="lp-card lp-shadow-gold px-2 py-2.5 md:px-4 md:py-3 text-center mb-5 rotate-1">
+                                <p class="font-extrabold text-sm md:text-base leading-tight break-words"><span class="inline-block w-2 h-2 rounded-full {{ $podiumSlot(0, 'dot') }} border border-black/30 align-middle mr-1" data-lp-podium-dot="0"></span><span data-lp-podium-name="0">{{ $podiumSlot(0, 'name') }}</span></p>
+                                <p class="lp-muted text-[0.6rem] md:text-[0.65rem] font-bold uppercase tracking-[0.18em] mt-0.5 break-words" data-lp-podium-meta="0">{{ $podiumSlot(0, 'meta') }}</p>
+                            </div>
+                            <div class="lp-podium lp-top-gold h-40 md:h-56">
+                                <span class="lp-display lp-outline text-6xl md:text-8xl">1</span>
+                            </div>
+                        </div>
+                        {{-- Platz 3 --}}
+                        <div class="min-w-0">
+                            <div class="lp-card lp-shadow px-2 py-2.5 md:px-4 md:py-3 text-center mb-5 rotate-2">
+                                <p class="font-extrabold text-sm md:text-base leading-tight break-words"><span class="inline-block w-2 h-2 rounded-full {{ $podiumSlot(2, 'dot') }} border border-black/30 align-middle mr-1" data-lp-podium-dot="2"></span><span data-lp-podium-name="2">{{ $podiumSlot(2, 'name') }}</span></p>
+                                <p class="lp-muted text-[0.6rem] md:text-[0.65rem] font-bold uppercase tracking-[0.18em] mt-0.5 break-words" data-lp-podium-meta="2">{{ $podiumSlot(2, 'meta') }}</p>
+                            </div>
+                            <div class="lp-podium lp-top-bronze h-20 md:h-28">
+                                <span class="lp-display lp-outline text-4xl md:text-6xl">3</span>
+                            </div>
                         </div>
                     </div>
+                </div>
+
+                <div class="text-center mt-12">
+                    <a href="{{ url('/ranking') }}" class="lp-btn-primary">
+                        Komplettes Ranking ansehen
+                        <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                             stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                            <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg>
+                    </a>
                 </div>
             </div>
         </section>
 
-        <section class="py-12 md:py-16 bg-gradient-to-br from-slate-50 to-gray-100 border-t border-gray-200">
+        {{-- ======================= MODULE / BAHNEN ====================== --}}
+        <section class="bg-white border-t-2 lp-bord py-16 md:py-24">
             <div class="container mx-auto px-4">
-                <div class="text-center mb-8 md:mb-12">
-                    <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-3 md:mb-4">Olympiade im Überblick</h2>
-                    <p class="text-base md:text-lg text-gray-600 max-w-2xl mx-auto">Live Zahlen zur Campus Olympiade im
-                        Überblick</p>
+                <div class="flex flex-wrap items-end justify-between gap-6 mb-12">
+                    <div>
+                        <span class="lp-kicker">Module</span>
+                        <h2 class="lp-display lp-h2 mt-4">Sechs Bahnen,<br>ein Wettkampf</h2>
+                    </div>
+                    <p class="lp-muted max-w-sm">
+                        Vom ersten Versuch bis zur Siegerehrung – alles läuft über eine Plattform.
+                    </p>
                 </div>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 max-w-5xl mx-auto mb-8">
-                    <a href="{{ url('/ranking') }}"
-                       class="bg-white rounded-xl md:rounded-2xl shadow-lg p-4 md:p-6 border border-gray-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group block">
-                        <div class="flex flex-col items-center text-center">
-                            <div
-                                class="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-xl md:rounded-2xl flex items-center justify-center mb-3 md:mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                                <svg class="w-6 h-6 text-white" xmlns="http://www.w3.org/2000/svg" width="24"
-                                     height="24" fill="none" viewBox="0 0 24 24">
-                                    <path stroke="currentColor" stroke-width="2.2"
-                                          d="M8 20v-9l-4 1.125V20h4Zm0 0h8m-8 0V6.66667M16 20v-9l4 1.125V20h-4Zm0 0V7m0 0V4h4v3h-4ZM6 8l6-4 4 2.66667M11 9h2m-2 3h2"/>
-                                </svg>
-                            </div>
-                            <div class="text-2xl md:text-3xl font-bold text-indigo-600 mb-1">{{ $schoolCount }}</div>
-                            <div class="text-xs md:text-sm font-medium text-gray-600 uppercase tracking-wide">Schulen
-                            </div>
-                        </div>
+
+                <div class="border-b-2 lp-bord">
+                    <a href="{{ url('/ranking') }}" class="lp-lane group">
+                        <span class="lp-lane-index">01</span>
+                        <span>
+                            <span class="lp-display block text-2xl md:text-3xl">Live-Ranking</span>
+                            <span class="lp-muted block text-sm md:text-base mt-1">Schulen, Klassen und Teams – jede Wertung sofort sichtbar.</span>
+                        </span>
+                        <span class="flex items-center gap-4">
+                            <span class="lp-chip hidden sm:inline-flex">Live</span>
+                            <span class="lp-lane-arrow">→</span>
+                        </span>
                     </a>
-                    <a href="{{ url('/ranking') }}"
-                       class="bg-white rounded-xl md:rounded-2xl shadow-lg p-4 md:p-6 border border-gray-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group block">
-                        <div class="flex flex-col items-center text-center">
-                            <div
-                                class="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl md:rounded-2xl flex items-center justify-center mb-3 md:mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                                <svg class="w-6 h-6 text-white" xmlns="http://www.w3.org/2000/svg" width="24"
-                                     height="24" fill="none" viewBox="0 0 24 24">
-                                    <path stroke="currentColor" stroke-width="2"
-                                          d="M4.5 17H4a1 1 0 0 1-1-1 3 3 0 0 1 3-3h1m0-3.05A2.5 2.5 0 1 1 9 5.5M19.5 17h.5a1 1 0 0 0 1-1 3 3 0 0 0-3-3h-1m0-3.05a2.5 2.5 0 1 0-2-4.45m.5 13.5h-7a1 1 0 0 1-1-1 3 3 0 0 1 3-3h3a3 3 0 0 1 3 3 1 1 0 0 1-1 1Zm-1-9.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0Z"/>
-                                </svg>
-                            </div>
-                            <div class="text-2xl md:text-3xl font-bold text-blue-600 mb-1">{{ $klasseCount }}</div>
-                            <div class="text-xs md:text-sm font-medium text-gray-600 uppercase tracking-wide">Klassen
-                            </div>
-                        </div>
+                    <a href="{{ url('/laufzettel') }}" class="lp-lane group">
+                        <span class="lp-lane-index">02</span>
+                        <span>
+                            <span class="lp-display block text-2xl md:text-3xl">Laufzettel</span>
+                            <span class="lp-muted block text-sm md:text-base mt-1">Der Steckbrief deines Teams: Disziplinen, Bestwerte, Platzierung.</span>
+                        </span>
+                        <span class="flex items-center gap-4">
+                            <span class="lp-chip hidden sm:inline-flex">Öffentlich</span>
+                            <span class="lp-lane-arrow">→</span>
+                        </span>
                     </a>
-                    <a href="{{ url('/ranking') }}"
-                       class="bg-white rounded-xl md:rounded-2xl shadow-lg p-4 md:p-6 border border-gray-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group block">
-                        <div class="flex flex-col items-center text-center">
-                            <div
-                                class="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl md:rounded-2xl flex items-center justify-center mb-3 md:mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                                <svg class="w-6 h-6 text-white" xmlns="http://www.w3.org/2000/svg" width="24"
-                                     height="24" fill="none" viewBox="0 0 24 24">
-                                    <path stroke="currentColor" stroke-width="2"
-                                          d="M16 19h4a1 1 0 0 0 1-1v-1a3 3 0 0 0-3-3h-2m-2.236-4a3 3 0 1 0 0-4M3 18v-1a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3v1a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1Zm8-10a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
-                                </svg>
-                            </div>
-                            <div class="text-2xl md:text-3xl font-bold text-emerald-600 mb-1">{{ $teamCount }}</div>
-                            <div class="text-xs md:text-sm font-medium text-gray-600 uppercase tracking-wide">Teams
-                            </div>
-                        </div>
+                    <a href="{{ url('/archive') }}" class="lp-lane group">
+                        <span class="lp-lane-index">03</span>
+                        <span>
+                            <span class="lp-display block text-2xl md:text-3xl">Archiv</span>
+                            <span class="lp-muted block text-sm md:text-base mt-1">Abgeschlossene Wettkämpfe als Snapshot für die Ewigkeit.</span>
+                        </span>
+                        <span class="flex items-center gap-4">
+                            <span class="lp-chip hidden sm:inline-flex">Historie</span>
+                            <span class="lp-lane-arrow">→</span>
+                        </span>
                     </a>
-                    <a href="{{ url('/ranking') }}"
-                       class="bg-white rounded-xl md:rounded-2xl shadow-lg p-4 md:p-6 border border-gray-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group block">
-                        <div class="flex flex-col items-center text-center">
-                            <div
-                                class="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl md:rounded-2xl flex items-center justify-center mb-3 md:mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                                <svg class="w-6 h-6 text-white" xmlns="http://www.w3.org/2000/svg" width="24"
-                                     height="24" fill="none" viewBox="0 0 24 24">
-                                    <path stroke="currentColor" stroke-width="2"
-                                          d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm0 0a8.949 8.949 0 0 0 4.951-1.488A3.987 3.987 0 0 0 13 16h-2a3.987 3.987 0 0 0-3.951 3.512A8.948 8.948 0 0 0 12 21Zm3-11a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
-                                </svg>
-                            </div>
-                            <div class="text-2xl md:text-3xl font-bold text-orange-600 mb-1">{{ $studentCount }}</div>
-                            <div class="text-xs md:text-sm font-medium text-gray-600 uppercase tracking-wide">Schüler
-                            </div>
-                        </div>
+                    <a href="{{ url('/login') }}" class="lp-lane group">
+                        <span class="lp-lane-index">04</span>
+                        <span>
+                            <span class="lp-display block text-2xl md:text-3xl">Punkte erfassen</span>
+                            <span class="lp-muted block text-sm md:text-base mt-1">Zwei Versuche pro Team, der Bestwert zählt automatisch.</span>
+                        </span>
+                        <span class="flex items-center gap-4">
+                            <span class="lp-chip hidden sm:inline-flex">Login</span>
+                            <span class="lp-lane-arrow">→</span>
+                        </span>
+                    </a>
+                    <a href="{{ url('/login') }}" class="lp-lane group">
+                        <span class="lp-lane-index">05</span>
+                        <span>
+                            <span class="lp-display block text-2xl md:text-3xl">Verwaltung</span>
+                            <span class="lp-muted block text-sm md:text-base mt-1">Schulen, Klassen, Teams und Disziplinen zentral gepflegt.</span>
+                        </span>
+                        <span class="flex items-center gap-4">
+                            <span class="lp-chip hidden sm:inline-flex">Admin</span>
+                            <span class="lp-lane-arrow">→</span>
+                        </span>
+                    </a>
+                    <a href="#community" class="lp-lane group">
+                        <span class="lp-lane-index">06</span>
+                        <span>
+                            <span class="lp-display block text-2xl md:text-3xl">Community</span>
+                            <span class="lp-muted block text-sm md:text-base mt-1">Feuere dein Team an – automatisch moderiertes Diskussionsboard.</span>
+                        </span>
+                        <span class="flex items-center gap-4">
+                            <span class="lp-chip hidden sm:inline-flex">Moderiert</span>
+                            <span class="lp-lane-arrow">→</span>
+                        </span>
                     </a>
                 </div>
-                <div class="max-w-sm mx-auto">
-                    <div class="bg-white/70 rounded-lg shadow-sm p-3 border border-gray-200/50 text-center">
-                        <div class="flex items-center justify-center gap-2 text-gray-600">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-purple-500" fill="none"
-                                 viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                <path
-                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                            </svg>
-                            <span class="text-sm"><strong
-                                    class="text-purple-600">{{ number_format($visitcount->total_visits ?? 0) }}</strong> Besuche insgesamt</span>
-                        </div>
+            </div>
+        </section>
+
+        {{-- ===================== ABLAUF / STAFFEL ====================== --}}
+        <section class="lp-sec-paper2 border-t-2 lp-bord py-16 md:py-24">
+            <div class="container mx-auto px-4">
+                <div class="text-center max-w-2xl mx-auto mb-16">
+                    <div class="flex justify-center">
+                        <span class="lp-kicker">Ablauf</span>
+                    </div>
+                    <h2 class="lp-display lp-h2 mt-4">Wie eine Staffel –<br>nur ohne Stolpern</h2>
+                </div>
+
+                <div class="relative grid md:grid-cols-3 gap-10 md:gap-6 max-w-5xl mx-auto">
+                    <div class="hidden md:block absolute top-1/2 left-[10%] right-[10%] border-t-2 border-dashed lp-bord opacity-30"
+                         aria-hidden="true"></div>
+
+                    <div class="lp-card lp-shadow relative z-10 p-7 pt-9">
+                        <span class="absolute -top-4 left-6 inline-flex items-center rounded-full border-2 lp-bord px-3.5 py-1 text-[0.65rem] font-extrabold uppercase tracking-[0.18em] text-white"
+                              style="background: var(--lp-accent);">Start</span>
+                        <p class="lp-display lp-outline text-5xl">01</p>
+                        <h3 class="lp-display text-xl mt-4">Ergebnisse eintragen</h3>
+                        <p class="lp-muted mt-2 text-sm leading-relaxed">
+                            Lehrkräfte und Klassen-Accounts erfassen zwei Versuche pro Team – direkt an der Station.
+                        </p>
+                    </div>
+
+                    <div class="lp-card lp-shadow relative z-10 p-7 pt-9">
+                        <span class="absolute -top-4 left-6 inline-flex items-center rounded-full border-2 lp-bord px-3.5 py-1 text-[0.65rem] font-extrabold uppercase tracking-[0.18em]"
+                              style="background: var(--lp-gold);">Wechsel</span>
+                        <p class="lp-display lp-outline text-5xl">02</p>
+                        <h3 class="lp-display text-xl mt-4">Punkte berechnen</h3>
+                        <p class="lp-muted mt-2 text-sm leading-relaxed">
+                            Der Bestwert zählt: Das Punktesystem vergibt Plätze und Punkte vollautomatisch.
+                        </p>
+                    </div>
+
+                    <div class="lp-card lp-shadow relative z-10 p-7 pt-9">
+                        <span class="absolute -top-4 left-6 inline-flex items-center rounded-full border-2 lp-bord px-3.5 py-1 text-[0.65rem] font-extrabold uppercase tracking-[0.18em] text-white"
+                              style="background: var(--lp-pine);">Ziel</span>
+                        <p class="lp-display lp-outline text-5xl">03</p>
+                        <h3 class="lp-display text-xl mt-4">Rangliste feiern</h3>
+                        <p class="lp-muted mt-2 text-sm leading-relaxed">
+                            Schulwertung, Klassenwertung, Teamwertung – live auf jedem Gerät.
+                        </p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section class="py-16 bg-gradient-to-br from-blue-100 to-green-100">
+        {{-- ======================== COMMUNITY ========================== --}}
+        <section id="community" class="lp-sec-paper border-t-2 lp-bord py-16 md:py-24">
             <div class="container mx-auto px-4">
-                <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-8 text-center">Community Diskussionen</h2>
-                <livewire:comments/>
+                <div class="text-center max-w-2xl mx-auto mb-12">
+                    <div class="flex justify-center">
+                        <span class="lp-kicker">Tribüne</span>
+                    </div>
+                    <h2 class="lp-display lp-h2 mt-4">Stimmen vom Spielfeldrand</h2>
+                    <p class="lp-muted mt-4">
+                        Kommentiere den Wettkampf – öffentlich sichtbar und automatisch moderiert.
+                    </p>
+                </div>
+                <div class="max-w-4xl mx-auto lp-card lp-shadow p-4 md:p-8">
+                    <livewire:comments/>
+                </div>
             </div>
         </section>
+
+        <div class="lp-checker h-4 border-t-2 lp-bord" aria-hidden="true"></div>
     </div>
 
     <div class="dark-mode-only relative z-0 min-h-screen overflow-x-hidden">
@@ -830,79 +961,68 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // Light mode slideshow
-            const containerLight = document.getElementById('slideshow-container-light');
-            if (containerLight) {
-                const indicatorsLight = document.querySelectorAll('.slide-indicator-light');
-                let currentSlideLight = 0;
-                const slideIntervalLight = 5000;
-                let slideshowLight;
+            // Light mode: Live-Uhr + 60s-Polling für Anzeigetafel, Podium und Ticker
+            const lpTicker = document.querySelector('[data-lp-ticker]');
+            if (lpTicker) {
+                const clockEl = document.querySelector('[data-lp-clock]');
 
-                // Berechne Anzahl der Gruppen basierend auf Viewport
-                function getSlidesPerView() {
-                    return window.innerWidth >= 768 ? 3 : 1; // 3 auf Desktop, 1 auf Mobile
+                function lpUpdateClock() {
+                    if (clockEl) {
+                        clockEl.textContent = new Date().toLocaleTimeString('de-DE', {
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        });
+                    }
                 }
 
-                function getTotalGroups() {
-                    return 6 - getSlidesPerView() + 1; // 6 Slides total, zeige 3 gleichzeitig = 4 Gruppen
-                }
+                lpUpdateClock();
+                setInterval(lpUpdateClock, 15000);
 
-                function showSlideLight(slideIndex) {
-                    const totalGroups = getTotalGroups();
-                    if (slideIndex < 0) slideIndex = 0;
-                    if (slideIndex >= totalGroups) slideIndex = totalGroups - 1;
+                const lpLiveUrl = '{{ route('home.live') }}';
 
-                    const slidesPerView = getSlidesPerView();
-                    const slideWidth = 100 / slidesPerView;
-                    const offset = -(slideIndex * slideWidth);
-                    containerLight.style.transform = `translateX(${offset}%)`;
+                async function lpRefresh() {
+                    // Nicht pollen, wenn Tab im Hintergrund oder Dark Mode aktiv ist
+                    if (document.hidden || document.documentElement.classList.contains('dark')) return;
+                    try {
+                        const res = await fetch(lpLiveUrl, {headers: {'Accept': 'application/json'}});
+                        if (!res.ok) return;
+                        const data = await res.json();
 
-                    indicatorsLight.forEach((indicator, index) => {
-                        if (index === slideIndex) {
-                            indicator.classList.remove('bg-gray-300');
-                            indicator.classList.add('bg-indigo-600');
-                        } else {
-                            indicator.classList.remove('bg-indigo-600');
-                            indicator.classList.add('bg-gray-300');
+                        document.querySelectorAll('[data-lp-stat]').forEach((el) => {
+                            const value = data.stats ? data.stats[el.dataset.lpStat] : undefined;
+                            if (value !== undefined && el.textContent !== value) {
+                                el.textContent = value;
+                            }
+                        });
+
+                        (data.podium || []).forEach((entry, i) => {
+                            const nameEl = document.querySelector('[data-lp-podium-name="' + i + '"]');
+                            const metaEl = document.querySelector('[data-lp-podium-meta="' + i + '"]');
+                            const dotEl = document.querySelector('[data-lp-podium-dot="' + i + '"]');
+                            if (nameEl) nameEl.textContent = entry.name;
+                            if (metaEl) metaEl.textContent = entry.meta;
+                            if (dotEl && entry.dot) {
+                                dotEl.className = 'inline-block w-2 h-2 rounded-full border border-black/30 align-middle mr-1 ' + entry.dot;
+                            }
+                        });
+
+                        if (Array.isArray(data.ticker) && data.ticker.length) {
+                            lpTicker.querySelectorAll(':scope > div').forEach((half) => {
+                                half.innerHTML = '';
+                                data.ticker.forEach((item) => {
+                                    const span = document.createElement('span');
+                                    span.className = 'lp-tick';
+                                    span.textContent = item;
+                                    half.appendChild(span);
+                                });
+                            });
                         }
-                    });
-                    currentSlideLight = slideIndex;
+                    } catch (e) {
+                        // Offline o.ä. – beim nächsten Intervall erneut versuchen
+                    }
                 }
 
-                function nextSlideLight() {
-                    const totalGroups = getTotalGroups();
-                    const nextIndex = (currentSlideLight + 1) % totalGroups;
-                    showSlideLight(nextIndex);
-                }
-
-                function startSlideshowLight() {
-                    if (slideshowLight) clearInterval(slideshowLight);
-                    slideshowLight = setInterval(nextSlideLight, slideIntervalLight);
-                }
-
-                function stopSlideshowLight() {
-                    if (slideshowLight) clearInterval(slideshowLight);
-                }
-
-                startSlideshowLight();
-
-                indicatorsLight.forEach((indicator, index) => {
-                    indicator.addEventListener('click', function () {
-                        stopSlideshowLight();
-                        showSlideLight(index);
-                        startSlideshowLight();
-                    });
-                });
-
-                const slideshowWrapperLight = containerLight.parentElement;
-                slideshowWrapperLight.addEventListener('mouseenter', stopSlideshowLight);
-                slideshowWrapperLight.addEventListener('mouseleave', startSlideshowLight);
-                window.addEventListener('beforeunload', stopSlideshowLight);
-
-                // Bei Resize neu berechnen
-                window.addEventListener('resize', function () {
-                    showSlideLight(0); // Zurück zum ersten Slide bei Resize
-                });
+                setInterval(lpRefresh, 60000);
             }
 
             const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;

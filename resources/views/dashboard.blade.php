@@ -3,7 +3,9 @@
         Klassen Dashboard
     </x-slot:heading>
 
-    <div class="bg-gradient-to-br from-blue-100 to-green-100 min-h-screen transition-colors duration-300 dark:bg-none">
+    @include('partials.lp-theme')
+
+    <div class="lp-skin bg-gradient-to-br from-blue-100 to-green-100 min-h-screen transition-colors duration-300 dark:bg-none">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="p-6 md:p-8 text-gray-900 dark:text-gray-100 transition-colors duration-300">
 

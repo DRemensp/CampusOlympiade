@@ -31,15 +31,27 @@
       data-auth="{{ auth()->check() ? '1' : '0' }}"
       data-roles="{{ auth()->check() ? auth()->user()->getRoleNames()->implode(',') : '' }}">
 
-<div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gradient-to-br from-blue-100 to-green-100 dark:from-blue-900 dark:to-green-900">
+@php $lpLogin = request()->routeIs('login'); @endphp
+@if($lpLogin)
+    @include('partials.lp-theme')
+@endif
+
+<div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gradient-to-br from-blue-100 to-green-100 dark:from-blue-900 dark:to-green-900 {{ $lpLogin ? 'lp-auth' : '' }}">
     <div>
         <a href="/" wire:navigate>
             <x-application-logo class="w-20 h-20 fill-current text-indigo-700 dark:text-indigo-400" />
         </a>
     </div>
 
+    @if($lpLogin)
+        {{-- Poster-Titel nur im Light Mode (dark:hidden lässt den Dark-Login unverändert) --}}
+        <div class="block dark:hidden text-center mt-4">
+            <span class="lp-kicker">Campus Olympiade</span>
+            <h1 class="lp-display text-4xl mt-2">Anmelden</h1>
+        </div>
+    @endif
 
-    <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white dark:bg-gray-800 shadow-xl overflow-hidden sm:rounded-lg transition-colors duration-300">
+    <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white dark:bg-gray-800 shadow-xl overflow-hidden sm:rounded-lg transition-colors duration-300 {{ $lpLogin ? 'lp-auth-card' : '' }}">
         {{ $slot }}
     </div>
 </div>

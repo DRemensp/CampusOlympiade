@@ -1,6 +1,297 @@
 <x-layout>
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
+    @include('partials.lp-theme')
+
+    {{-- ===================== LIGHT MODE – „Sportfest-Poster“ ===================== --}}
+    <div class="light-mode-only -mt-10">
+        <section class="lp-sec-paper relative overflow-hidden pt-24 md:pt-28 pb-20 min-h-screen">
+            <div class="lp-lanes absolute inset-0 pointer-events-none" aria-hidden="true"></div>
+
+            <div class="container mx-auto px-4 relative z-10 max-w-4xl">
+
+                @if(!$selectedTeam)
+                    {{-- ===== Suche ===== --}}
+                    <div class="text-center max-w-2xl mx-auto">
+                        <div class="flex justify-center">
+                            <span class="lp-kicker lp-reveal">Team-Steckbrief</span>
+                        </div>
+                        <h1 class="lp-display lp-h2 mt-4 lp-reveal lp-d1">
+                            Der <span class="lp-outline">Laufzettel</span>
+                        </h1>
+                        <p class="lp-muted mt-4 lp-reveal lp-d2">
+                            Such dein Team und sieh alle Disziplinen, Versuche, Bestwerte
+                            und die aktuelle Platzierung auf einen Blick.
+                        </p>
+                    </div>
+
+                    <div class="max-w-xl mx-auto mt-10 lp-reveal lp-d3">
+                        <div class="lp-card lp-shadow p-5 -rotate-1">
+                            <label for="lp-team-search" class="lp-display text-lg block">Team suchen</label>
+                            <input type="text"
+                                   id="lp-team-search"
+                                   placeholder="Teamname eingeben …"
+                                   autocomplete="off"
+                                   class="w-full mt-3 px-4 py-3 rounded-xl border-2 lp-bord bg-white text-base font-semibold placeholder:font-normal placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[color:var(--lp-accent)]">
+                            <div class="lp-barcode mt-5"></div>
+                        </div>
+                        <div id="lp-laufzettel-results" class="mt-6 space-y-3"></div>
+                    </div>
+                @else
+                    {{-- ===== Team-Detail ===== --}}
+                    @php
+                        $scoreEntryUrl = route('dashboard', [
+                            'scan_team' => $selectedTeam->id,
+                            'open_score_modal' => 1,
+                        ]);
+                        $lpHasMembers = $selectedTeam->members
+                            && ((is_array($selectedTeam->members) && count($selectedTeam->members) > 0)
+                                || (is_string($selectedTeam->members) && count(json_decode($selectedTeam->members, true) ?? []) > 0));
+                    @endphp
+
+                    <div class="flex justify-center">
+                        <span class="lp-kicker lp-reveal">Laufzettel</span>
+                    </div>
+
+                    {{-- Startnummern-Karte des Teams --}}
+                    <div class="max-w-md mx-auto mt-6 lp-reveal lp-d1">
+                        <div class="lp-card lp-shadow relative px-7 pt-7 pb-8 -rotate-1">
+                            <span class="lp-pin absolute top-3 left-3"></span>
+                            <span class="lp-pin absolute top-3 right-3"></span>
+                            <span class="lp-pin absolute bottom-3 left-3"></span>
+                            <span class="lp-pin absolute bottom-3 right-3"></span>
+
+                            <div class="flex items-center justify-between text-[0.62rem] font-extrabold uppercase tracking-[0.22em] lp-muted">
+                                <span>Campus Olympiade</span>
+                                <span>Nr. {{ str_pad($selectedTeam->id, 3, '0', STR_PAD_LEFT) }}</span>
+                            </div>
+                            <div class="mt-3 border-t-2 border-dashed lp-bord opacity-20"></div>
+
+                            <h1 class="lp-display text-3xl md:text-4xl text-center mt-5 break-words">{{ $selectedTeam->name }}</h1>
+                            <p class="lp-muted text-center text-[0.68rem] font-bold uppercase tracking-[0.18em] mt-2 break-words">
+                                <span class="inline-block w-2.5 h-2.5 rounded-full {{ $schoolColors['dot'] ?? 'bg-gray-400' }} border border-black/30 align-middle mr-1"></span>{{ $selectedTeam->klasse->name ?? 'N/A' }} · {{ $selectedTeam->klasse->school->name ?? 'N/A' }}
+                            </p>
+
+                            <div class="grid grid-cols-2 gap-px border-2 lp-bord rounded-xl overflow-hidden mt-6" style="background: rgba(22,29,39,0.5);">
+                                <div class="bg-white px-3 py-4 text-center">
+                                    <p class="lp-display text-3xl leading-none">{{ $selectedTeam->score }}</p>
+                                    <p class="lp-muted text-[0.6rem] font-bold uppercase tracking-[0.2em] mt-1.5">Punkte</p>
+                                </div>
+                                <div class="bg-white px-3 py-4 text-center">
+                                    <p class="lp-display text-3xl leading-none">{{ $overallRanking ? $overallRanking . '/' . $totalTeams : '–' }}</p>
+                                    <p class="lp-muted text-[0.6rem] font-bold uppercase tracking-[0.2em] mt-1.5">Platz</p>
+                                </div>
+                            </div>
+
+                            <div class="lp-barcode mt-6"></div>
+                        </div>
+                    </div>
+
+                    {{-- Aktionen --}}
+                    <div class="flex flex-wrap justify-center gap-3 mt-8 lp-reveal lp-d2">
+                        <button type="button" onclick="lpOpenModal('lp-qr-modal')" class="lp-btn-primary text-xs px-5 py-3">
+                            QR-Code anzeigen
+                        </button>
+                        @if($lpHasMembers)
+                            <button type="button" onclick="lpOpenMembersModal()" class="lp-chip lp-tab">👥 Mitglieder</button>
+                        @endif
+                        @if($selectedTeam->bonus)
+                            <button type="button" onclick="lpOpenModal('lp-bonus-modal')" class="lp-chip lp-tab" style="background: var(--lp-gold);">⭐ Bonus</button>
+                        @endif
+                    </div>
+
+                    {{-- Ergebnisse --}}
+                    <div class="mt-12 lp-reveal lp-d3">
+                        @if(empty($teamResults))
+                            <div class="lp-card lp-shadow p-8 text-center">
+                                <p class="lp-muted">Keine Disziplinen gefunden.</p>
+                            </div>
+                        @else
+                            <h2 class="lp-display text-xl md:text-2xl mb-5">Alle Disziplinen</h2>
+
+                            {{-- Desktop: Tabelle --}}
+                            <div class="hidden md:block lp-card lp-shadow overflow-hidden">
+                                <table class="min-w-full">
+                                    <thead style="background: var(--lp-ink);">
+                                    <tr>
+                                        <th class="py-3.5 px-4 text-left text-[0.62rem] font-extrabold uppercase tracking-[0.2em] text-white/80">Disziplin</th>
+                                        <th class="py-3.5 px-4 text-center text-[0.62rem] font-extrabold uppercase tracking-[0.2em] text-white/80">Platz</th>
+                                        <th class="py-3.5 px-4 text-center text-[0.62rem] font-extrabold uppercase tracking-[0.2em] text-white/80">Versuch 1</th>
+                                        <th class="py-3.5 px-4 text-center text-[0.62rem] font-extrabold uppercase tracking-[0.2em] text-white/80">Versuch 2</th>
+                                        <th class="py-3.5 px-4 text-center text-[0.62rem] font-extrabold uppercase tracking-[0.2em] text-white/80">Bestwert</th>
+                                        <th class="py-3.5 px-4 text-center text-[0.62rem] font-extrabold uppercase tracking-[0.2em] text-white/80">★ Highscore</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    @foreach($teamResults as $result)
+                                        <tr class="border-t-2 hover:bg-[#F1E9D6] transition-colors" style="border-color: rgba(22, 29, 39, 0.12);">
+                                            <td class="py-3.5 px-4">
+                                                <span class="font-extrabold break-words">{{ $result['discipline_name'] }}</span>
+                                                @if($result['discipline_unit'])
+                                                    <span class="lp-muted block text-xs">Einheit: {{ $result['discipline_unit'] }}</span>
+                                                @endif
+                                            </td>
+                                            <td class="py-3.5 px-4 text-center">
+                                                @if($result['has_participated'])
+                                                    <span class="inline-flex items-center justify-center border-2 lp-bord rounded-xl px-2.5 py-1 font-extrabold text-sm whitespace-nowrap"
+                                                          style="{{ $result['position'] <= 3 ? 'background: var(--lp-gold);' : 'background: #fff;' }}">
+                                                        {{ $result['position'] }}/{{ $result['total_participants'] }}
+                                                    </span>
+                                                @else
+                                                    <span class="lp-muted italic text-xs">Nicht teilgenommen</span>
+                                                @endif
+                                            </td>
+                                            <td class="py-3.5 px-4 text-center font-semibold">{{ $result['scores']['score_1'] ?? '–' }}</td>
+                                            <td class="py-3.5 px-4 text-center font-semibold">{{ $result['scores']['score_2'] ?? '–' }}</td>
+                                            <td class="py-3.5 px-4 text-center">
+                                                @if($result['has_participated'])
+                                                    <span class="lp-display text-lg">{{ $result['scores']['best_score'] }}@if($result['discipline_unit']) {{ $result['discipline_unit'] }}@endif</span>
+                                                @else
+                                                    <span class="lp-muted">–</span>
+                                                @endif
+                                            </td>
+                                            <td class="py-3.5 px-4 text-center">
+                                                @if($result['highscore'] !== null)
+                                                    <span class="font-extrabold" style="color: #A16207;">★ {{ $result['highscore'] }}@if($result['discipline_unit']) {{ $result['discipline_unit'] }}@endif</span>
+                                                @else
+                                                    <span class="lp-muted">–</span>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            {{-- Mobil: Karten --}}
+                            <div class="md:hidden space-y-4">
+                                @foreach($teamResults as $result)
+                                    <div class="lp-card lp-shadow p-4">
+                                        <div class="flex justify-between items-start gap-2">
+                                            <h3 class="lp-display text-lg break-words min-w-0">{{ $result['discipline_name'] }}</h3>
+                                            @if($result['has_participated'])
+                                                <span class="inline-flex items-center justify-center border-2 lp-bord rounded-xl px-2 py-0.5 font-extrabold text-xs whitespace-nowrap shrink-0"
+                                                      style="{{ $result['position'] <= 3 ? 'background: var(--lp-gold);' : 'background: #fff;' }}">
+                                                    {{ $result['position'] }}/{{ $result['total_participants'] }}
+                                                </span>
+                                            @endif
+                                        </div>
+
+                                        @if($result['has_participated'])
+                                            <div class="grid grid-cols-2 gap-3 mt-3 text-sm">
+                                                <div>
+                                                    <span class="lp-muted text-xs font-bold uppercase tracking-[0.12em]">Versuch 1</span>
+                                                    <span class="block font-extrabold">{{ $result['scores']['score_1'] ?? '–' }}</span>
+                                                </div>
+                                                <div>
+                                                    <span class="lp-muted text-xs font-bold uppercase tracking-[0.12em]">Versuch 2</span>
+                                                    <span class="block font-extrabold">{{ $result['scores']['score_2'] ?? '–' }}</span>
+                                                </div>
+                                            </div>
+                                            <div class="flex items-end justify-between gap-3 mt-3 pt-3 border-t-2 border-dashed" style="border-color: rgba(22, 29, 39, 0.2);">
+                                                <div>
+                                                    <span class="lp-muted text-xs font-bold uppercase tracking-[0.12em]">Bestwert</span>
+                                                    <span class="lp-display text-2xl block leading-none mt-0.5">{{ $result['scores']['best_score'] }}@if($result['discipline_unit']) {{ $result['discipline_unit'] }}@endif</span>
+                                                </div>
+                                                <div class="text-right">
+                                                    <span class="lp-muted text-xs font-bold uppercase tracking-[0.12em]">★ Highscore</span>
+                                                    @if($result['highscore'] !== null)
+                                                        <span class="block font-extrabold" style="color: #A16207;">{{ $result['highscore'] }}@if($result['discipline_unit']) {{ $result['discipline_unit'] }}@endif</span>
+                                                    @else
+                                                        <span class="lp-muted block">–</span>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        @else
+                                            <p class="lp-muted italic text-sm mt-2">Nicht teilgenommen</p>
+                                        @endif
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
+                    </div>
+
+                    <div class="mt-10 text-center">
+                        <a href="{{ route('laufzettel.index') }}" class="lp-btn-ghost text-xs px-5 py-3">
+                            ← Anderes Team suchen
+                        </a>
+                    </div>
+                @endif
+            </div>
+
+            {{-- ===== Light-Mode-Modals ===== --}}
+            @if($selectedTeam)
+                <div id="lp-qr-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4"
+                     style="background: rgba(22, 29, 39, 0.65);" onclick="lpCloseModal(event, 'lp-qr-modal')">
+                    <div class="lp-card lp-shadow w-full max-w-md max-h-[90vh] flex flex-col overflow-hidden"
+                         style="background: var(--lp-paper);" onclick="event.stopPropagation()">
+                        <div class="flex items-center justify-between gap-3 px-5 py-4" style="background: var(--lp-ink);">
+                            <h3 class="lp-display text-xl text-white">QR-Code für Stationen</h3>
+                            <button type="button" onclick="lpCloseModal(null, 'lp-qr-modal')"
+                                    class="shrink-0 w-9 h-9 grid place-items-center rounded-full border-2 border-white/40 text-white text-lg font-extrabold hover:border-white transition-colors">×</button>
+                        </div>
+                        <div class="p-5 overflow-y-auto">
+                            <p class="lp-muted text-sm text-center">
+                                Station scannt diesen Code, das Team wird im Klassen-Dashboard direkt
+                                vorausgewählt und das Score-Popup öffnet sich.
+                            </p>
+                            <div class="mt-4 flex justify-center">
+                                <div class="relative inline-block lp-card p-3">
+                                    {!! \SimpleSoftwareIO\QrCode\Facades\QrCode::size(240)->margin(1)->errorCorrection('H')->generate($scoreEntryUrl) !!}
+                                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded bg-white border-2 lp-bord p-0.5">
+                                        <picture>
+                                            <source srcset="{{ asset('img.webp') }}" type="image/webp">
+                                            <img src="{{ asset('img.png') }}" alt="Logo" class="h-14 w-14 block">
+                                        </picture>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="lp-muted mt-3 text-center text-xs break-all">Ziel: {{ $scoreEntryUrl }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="lp-members-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4"
+                     style="background: rgba(22, 29, 39, 0.65);" onclick="lpCloseModal(event, 'lp-members-modal')">
+                    <div class="lp-card lp-shadow w-full max-w-md max-h-[85vh] flex flex-col overflow-hidden"
+                         style="background: var(--lp-paper);" onclick="event.stopPropagation()">
+                        <div class="flex items-center justify-between gap-3 px-5 py-4" style="background: var(--lp-ink);">
+                            <h3 class="lp-display text-xl text-white">Mitglieder</h3>
+                            <button type="button" onclick="lpCloseModal(null, 'lp-members-modal')"
+                                    class="shrink-0 w-9 h-9 grid place-items-center rounded-full border-2 border-white/40 text-white text-lg font-extrabold hover:border-white transition-colors">×</button>
+                        </div>
+                        <div id="lp-members-content" class="p-5 overflow-y-auto space-y-2"></div>
+                    </div>
+                </div>
+
+                <div id="lp-bonus-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4"
+                     style="background: rgba(22, 29, 39, 0.65);" onclick="lpCloseModal(event, 'lp-bonus-modal')">
+                    <div class="lp-card lp-shadow w-full max-w-md flex flex-col overflow-hidden"
+                         style="background: var(--lp-paper);" onclick="event.stopPropagation()">
+                        <div class="flex items-center justify-between gap-3 px-5 py-4" style="background: var(--lp-gold);">
+                            <h3 class="lp-display text-xl">⭐ Bonus</h3>
+                            <button type="button" onclick="lpCloseModal(null, 'lp-bonus-modal')"
+                                    class="shrink-0 w-9 h-9 grid place-items-center rounded-full border-2 lp-bord text-lg font-extrabold hover:bg-white/40 transition-colors">×</button>
+                        </div>
+                        <div class="p-5 flex items-start gap-3">
+                            <span class="text-3xl" aria-hidden="true">👕</span>
+                            <div>
+                                <p class="font-extrabold">Bonus für passende Outfits</p>
+                                <p class="lp-muted text-sm mt-1.5 leading-relaxed">
+                                    Dieses Team hat passende Outfits als Team getragen und erhält dafür
+                                    Bonus-Punkte in der Gesamtwertung.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
+        </section>
+        <div class="lp-checker h-4 border-t-2 lp-bord" aria-hidden="true"></div>
+    </div>
+
+    {{-- ===================== DARK MODE – unverändert ===================== --}}
+    <div class="dark-mode-only">
     <div class="min-h-screen bg-gradient-to-br from-blue-100 to-green-100 py-8 transition-colors duration-300 dark:bg-none">
         <div class="container mx-auto px-4">
 
@@ -350,6 +641,7 @@
             </div>
         </div>
     </div>
+    </div>
 
     @if(isset($teamsForJs) && isset($colorMapForJs))
         <script>
@@ -413,10 +705,130 @@
             document.getElementById(modalId).classList.add('hidden');
         }
 
+        // ===================== Light Mode (Poster-Design) =====================
+
+        function lpOpenModal(id) {
+            const modal = document.getElementById(id);
+            if (!modal) return;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function lpCloseModal(event, id) {
+            if (event && event.target !== event.currentTarget) return;
+            const modal = document.getElementById(id);
+            if (!modal) return;
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function lpOpenMembersModal() {
+            let membersData = null;
+            if (Array.isArray(teamMembers)) {
+                membersData = teamMembers;
+            } else if (typeof teamMembers === 'string') {
+                try {
+                    membersData = JSON.parse(teamMembers);
+                } catch (e) {
+                    membersData = null;
+                }
+            }
+
+            const content = document.getElementById('lp-members-content');
+            content.innerHTML = '';
+
+            if (!membersData || !Array.isArray(membersData) || membersData.length === 0) {
+                const empty = document.createElement('p');
+                empty.className = 'lp-muted text-sm';
+                empty.textContent = 'Keine Mitglieder gefunden.';
+                content.appendChild(empty);
+            } else {
+                membersData.forEach((member, index) => {
+                    const row = document.createElement('div');
+                    row.className = 'flex items-center gap-3 p-2.5 bg-white border-2 rounded-xl';
+                    row.style.borderColor = 'rgba(22, 29, 39, 0.15)';
+
+                    const num = document.createElement('span');
+                    num.className = 'lp-display text-sm w-6 text-center shrink-0';
+                    num.textContent = index + 1;
+
+                    const name = document.createElement('span');
+                    name.className = 'font-semibold text-sm break-words min-w-0';
+                    name.textContent = member;
+
+                    row.appendChild(num);
+                    row.appendChild(name);
+                    content.appendChild(row);
+                });
+            }
+
+            lpOpenModal('lp-members-modal');
+        }
+
+        // Team-Suche (Light Mode, nur auf der Such-Seite aktiv)
+        document.addEventListener('DOMContentLoaded', function () {
+            const input = document.getElementById('lp-team-search');
+            const results = document.getElementById('lp-laufzettel-results');
+            if (!input || !results) return;
+
+            const laufzettelBase = '{{ url('/laufzettel') }}';
+
+            function lpSchoolDot(schoolId) {
+                const colors = colorMap[schoolId] || colorMap['default'] || {};
+                const dot = document.createElement('span');
+                dot.className = 'inline-block w-2.5 h-2.5 rounded-full ' + (colors['dot'] || 'bg-gray-400') + ' border border-black/30 align-middle mr-1.5';
+                return dot;
+            }
+
+            input.addEventListener('input', function () {
+                const query = this.value.trim().toLowerCase();
+                results.innerHTML = '';
+                if (query.length < 2) return;
+
+                const matches = allTeamsData
+                    .filter((team) => team.name.toLowerCase().includes(query))
+                    .slice(0, 8);
+
+                if (!matches.length) {
+                    const empty = document.createElement('p');
+                    empty.className = 'lp-muted text-center text-sm py-4';
+                    empty.textContent = 'Kein Team gefunden.';
+                    results.appendChild(empty);
+                    return;
+                }
+
+                matches.forEach((team) => {
+                    const link = document.createElement('a');
+                    link.href = laufzettelBase + '/' + team.id;
+                    link.className = 'lp-card lp-shadow block p-4 transition-transform duration-200 hover:-translate-y-0.5';
+
+                    const top = document.createElement('div');
+                    top.className = 'flex items-center justify-between gap-3';
+
+                    const name = document.createElement('span');
+                    name.className = 'font-extrabold break-words min-w-0';
+                    name.appendChild(lpSchoolDot(team.school_id));
+                    name.appendChild(document.createTextNode(team.name));
+
+                    const arrow = document.createElement('span');
+                    arrow.className = 'text-lg font-extrabold shrink-0';
+                    arrow.textContent = '→';
+
+                    top.appendChild(name);
+                    top.appendChild(arrow);
+
+                    const sub = document.createElement('p');
+                    sub.className = 'lp-muted text-xs mt-1 break-words';
+                    sub.textContent = team.klasse_name + ' – ' + team.school_name + (team.bonus ? ' · ⭐ Bonus' : '');
+
+                    link.appendChild(top);
+                    link.appendChild(sub);
+                    results.appendChild(link);
+                });
+            });
+        });
     </script>
     @push('scripts')
         @vite(['resources/js/laufzettel-search.js'])
     @endpush
 </x-layout>
-
-
