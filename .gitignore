@@ -112,3 +112,7 @@ storage/clockwork/
 
 # Vite Cache
 /.vite/
+
+# KI-/Assistenten-Artefakte (nicht ins öffentliche Repo)
+/.claude/
+/CLAUDE.md
