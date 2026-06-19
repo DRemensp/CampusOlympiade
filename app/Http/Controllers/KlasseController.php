@@ -25,6 +25,18 @@ class KlasseController extends Controller
         }
     }
 
+    /**
+     * Gibt das (entschlüsselte) Klassen-Passwort zurück – nur für Admins.
+     * Wird vom Auge-Icon im Admin-Bereich beim Klick abgerufen, damit der
+     * Klartext nicht schon im Seiten-Quelltext steht.
+     */
+    public function password(Klasse $klasse)
+    {
+        $this->ensureAdmin();
+
+        return response()->json(['password' => $klasse->password]);
+    }
+
     public function store(Request $request)
     {
         $this->ensureAdmin();

@@ -35,6 +35,9 @@ Route::patch('/klasses/{klasse}', [KlasseController::class, 'update'])
 Route::post('/klasses', [KlasseController::class, 'store'])
     ->middleware(['auth'])
     ->name('klasses.store');
+Route::get('/klasses/{klasse}/password', [KlasseController::class, 'password'])
+    ->middleware(['auth'])
+    ->name('klasses.password');
 
 
 require __DIR__.'/auth.php';

@@ -44,16 +44,21 @@
                 <p class="mt-2">
                     Daten werden nur so lange gespeichert, wie es für die jeweiligen Zwecke erforderlich ist oder gesetzliche Aufbewahrungspflichten bestehen.
                 </p>
+                <p class="mt-2">
+                    Die bei Kommentaren zur Missbrauchs- und Spam-Abwehr erfasste IP-Adresse wird spätestens nach 30 Tagen automatisch gelöscht bzw. anonymisiert. Der Kommentarinhalt und ein optional angegebener Name bleiben gespeichert, bis der Kommentar gelöscht wird.
+                </p>
             </section>
 
             <section>
-                <h2 class="text-xl font-semibold text-gray-900 dark:text-white">5. Empfänger und Drittlandübermittlung</h2>
+                <h2 class="text-xl font-semibold text-gray-900 dark:text-white">5. Kommentare, Moderation und Drittlandübermittlung</h2>
                 <p class="mt-2">
-                    Für die Moderation von Kommentaren wird die Perspective API eingesetzt.
-                    Wenn Kommentare genutzt werden, können Kommentar-Inhalte zur Prüfung auf anstößige Inhalte an diesen Dienst übermittelt werden.
+                    Beim Absenden eines Kommentars verarbeiten wir den Kommentartext, einen optional angegebenen Namen sowie die IP-Adresse. Die IP-Adresse dient ausschließlich der Abwehr von Missbrauch und Spam (Art. 6 Abs. 1 lit. f DSGVO) und wird nach der unter Ziffer 4 genannten Frist gelöscht. Die Kommentarfunktion wird nur nach ausdrücklicher Einwilligung bereitgestellt (Art. 6 Abs. 1 lit. a DSGVO).
                 </p>
                 <p class="mt-2">
-                    Eine Verarbeitung in Drittländern kann dabei nicht ausgeschlossen werden.
+                    Zur Prüfung auf anstößige Inhalte wird der Kommentartext an die Perspective API von Google (Google LLC, 1600 Amphitheatre Parkway, Mountain View, CA 94043, USA) übermittelt. Übertragen wird dabei ausschließlich der Kommentartext – keine IP-Adresse und kein Name. Google wird angewiesen, die übermittelten Inhalte nicht dauerhaft zu speichern („doNotStore“).
+                </p>
+                <p class="mt-2">
+                    Da Google seinen Sitz in den USA hat, findet eine Übermittlung in ein Drittland statt. Diese stützt sich auf das EU-US Data Privacy Framework, unter dem Google zertifiziert ist, sowie auf die ausdrückliche Einwilligung der Nutzer (Art. 49 Abs. 1 lit. a DSGVO).
                 </p>
             </section>
 

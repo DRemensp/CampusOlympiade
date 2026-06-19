@@ -306,7 +306,7 @@
                                                         <span class="inline-block w-2.5 h-2.5 rounded-full {{ \App\Services\SchoolColorService::getColorClasses($klasse->school_id ?? 0)['dot'] }} border border-black/30 align-middle mr-1.5"></span>{{ $klasse->name }}
                                                     </span>
                                                     <span class="lp-muted text-xs block mt-0.5">{{ $klasse->school->name ?? 'Keine Schule' }}</span>
-                                                    <span class="inline-block mt-1.5 font-mono text-xs font-bold bg-white border-2 lp-bord rounded-lg px-2 py-0.5">PW: {{ $klasse->password }}</span>
+                                                    <span class="inline-flex items-center gap-1.5 mt-1.5 font-mono text-xs font-bold bg-white border-2 lp-bord rounded-lg px-2 py-0.5" data-pw-container>PW:&nbsp;<span data-pw-mask>••••••••</span><button type="button" data-pw-toggle data-klasse="{{ $klasse->id }}" class="leading-none" title="Passwort anzeigen" aria-label="Passwort anzeigen">👁</button></span>
                                                 </div>
                                                 <form action="{{ route('klasses.destroy', $klasse->id) }}" method="POST"
                                                       onsubmit="return confirm('Klasse {{ $klasse->name }} wirklich löschen? Alle zugehörigen Teams und Disziplinen werden ebenfalls gelöscht!');">
@@ -889,7 +889,7 @@
                                                         <span class="text-gray-700 dark:text-gray-200 transition-colors duration-300">{{ $klasse->name }}</span>
                                                         <span class="text-xs text-gray-500 dark:text-gray-400 ml-2 transition-colors duration-300">({{ $klasse->school->name ?? 'Keine Schule' }})</span>
                                                         <br>
-                                                        <span class="text-xs text-blue-500 dark:text-blue-400 ml-2 transition-colors duration-300">Password: {{ $klasse->password }}</span>
+                                                        <span class="text-xs text-blue-500 dark:text-blue-400 ml-2 transition-colors duration-300 inline-flex items-center gap-1.5" data-pw-container>Password:&nbsp;<span data-pw-mask>••••••••</span><button type="button" data-pw-toggle data-klasse="{{ $klasse->id }}" title="Passwort anzeigen" aria-label="Passwort anzeigen">👁</button></span>
                                                     </div>
                                                     <form action="{{ route('klasses.destroy', $klasse->id) }}" method="POST"
                                                           onsubmit="return confirm('Klasse {{ $klasse->name }} wirklich löschen? Alle zugehörigen Teams und Disziplinen werden ebenfalls gelöscht!');">
@@ -1194,4 +1194,38 @@
         </div>
     </div>
     </div>
+    <script>
+        // Klassen-Passwort: wird erst beim Klick aufs Auge vom Server
+        // entschlüsselt nachgeladen und beim erneuten Klick wieder verborgen.
+        document.addEventListener('click', async function (e) {
+            const btn = e.target.closest('[data-pw-toggle]');
+            if (!btn) return;
+
+            const container = btn.closest('[data-pw-container]');
+            const mask = container && container.querySelector('[data-pw-mask]');
+            if (!mask) return;
+
+            // Bereits sichtbar -> verbergen (Klartext verlässt das DOM wieder)
+            if (btn.dataset.shown === '1') {
+                mask.textContent = '••••••••';
+                btn.dataset.shown = '0';
+                btn.title = 'Passwort anzeigen';
+                return;
+            }
+
+            mask.textContent = '…';
+            try {
+                const res = await fetch('/klasses/' + btn.dataset.klasse + '/password', {
+                    headers: { 'Accept': 'application/json' }
+                });
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                const data = await res.json();
+                mask.textContent = data.password ?? '';
+                btn.dataset.shown = '1';
+                btn.title = 'Passwort verbergen';
+            } catch (err) {
+                mask.textContent = 'Fehler';
+            }
+        });
+    </script>
 </x-layout>
