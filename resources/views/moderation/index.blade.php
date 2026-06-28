@@ -173,6 +173,8 @@
                                                 <span class="text-xs text-gray-400 dark:text-gray-500">{{ $ipStat->total }} Kommentare</span>
                                             @endif
                                         </div>
+                                    @elseif($comment->ipExpired())
+                                        <code class="text-xs bg-amber-50 dark:bg-amber-900/30 px-2 py-1 rounded font-mono text-amber-700 dark:text-amber-400 transition-colors duration-200" title="IP-Adresse nach {{ \App\Models\Comment::IP_RETENTION_DAYS }} Tagen DSGVO-konform anonymisiert">Anonymisiert</code>
                                     @else
                                         <code class="text-xs bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded font-mono text-gray-700 dark:text-gray-300 transition-colors duration-200">N/A</code>
                                     @endif

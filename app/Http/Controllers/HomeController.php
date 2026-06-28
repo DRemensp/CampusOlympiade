@@ -167,18 +167,15 @@ class HomeController extends Controller
 
     /**
      * "Team des Tages" für die Startnummern-Karte im Hero:
-     * rotiert deterministisch mit dem Kalendertag durch alle Teams.
+     * das aktuell führende Team (höchster Score). Bei Gleichstand
+     * gewinnt das niedrigere ID (deterministisch).
      */
     private function teamOfTheDay(): ?Team
     {
-        $ids = Team::orderBy('id')->pluck('id');
-
-        if ($ids->isEmpty()) {
-            return null;
-        }
-
-        return Team::with('klasse.discipline')
-            ->find($ids[now()->dayOfYear % $ids->count()]);
+        return Team::with('klasse.school')
+            ->orderByDesc('score')
+            ->orderBy('id')
+            ->first();
     }
 
     /**

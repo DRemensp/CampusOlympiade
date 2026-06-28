@@ -287,7 +287,7 @@
     <div class="light-mode-only -mt-10">
 
         {{-- ============================ HERO ============================ --}}
-        <section class="lp-sec-paper relative overflow-hidden pt-28 md:pt-36 pb-20 md:pb-28">
+        <section class="lp-sec-paper relative overflow-hidden pt-16 md:pt-36 pb-20 md:pb-28">
             <div class="lp-lanes absolute inset-0 pointer-events-none" aria-hidden="true"></div>
             <div class="hidden lg:block absolute -top-12 -right-20 w-[440px] h-[120px] rotate-[-8deg] opacity-70 pointer-events-none"
                  style="background: var(--lp-gold);" aria-hidden="true"></div>
@@ -295,7 +295,7 @@
             <div class="container mx-auto px-4 relative z-10">
                 <div class="grid lg:grid-cols-12 gap-14 lg:gap-8 items-center">
                     <div class="lg:col-span-7">
-                        <div class="lp-kicker lp-reveal">Schulwettkampf · Live-Portal</div>
+                        <div class="lp-kicker lp-reveal">Eigenständige Web-Anwendung · Schulwettkampf</div>
 
                         <h1 class="lp-display lp-h1 mt-6">
                             <span class="block lp-reveal lp-d1">Campus</span>
@@ -305,8 +305,8 @@
                         <p class="lp-stamp mt-6 lp-reveal lp-d2">Schneller · Höher · Weiter</p>
 
                         <p class="lp-muted text-lg md:text-xl max-w-xl mt-6 lp-reveal lp-d3">
-                            Ergebnisse erfassen, Punkte automatisch berechnen, Ranglisten in Echtzeit
-                            verfolgen – das Wettkampfzentrum für Schulen, Klassen und Teams.
+                            Die Web-Anwendung, die alles kann – vom Anlegen der Schulen, Klassen und
+                            Teams bis hin zu Live-Ranglisten, Laufzetteln und Urkunden-Druck.
                         </p>
 
                         <div class="flex flex-wrap gap-4 mt-8 lp-reveal lp-d4">
@@ -323,11 +323,6 @@
                             </a>
                         </div>
 
-                        <div class="flex flex-wrap gap-2.5 mt-8 lp-reveal lp-d5">
-                            <span class="lp-chip"><span data-lp-stat="schools">{{ $schoolCount }}</span>&nbsp;Schulen am Start</span>
-                            <span class="lp-chip"><span data-lp-stat="teams">{{ $teamCount }}</span>&nbsp;Teams im Rennen</span>
-                            <span class="lp-chip lp-chip-accent"><span class="lp-live-dot" style="background:#fff;"></span> Live ausgewertet</span>
-                        </div>
                     </div>
 
                     {{-- Startnummern-Karte: echtes "Team des Tages", verlinkt auf den Laufzettel --}}
@@ -353,10 +348,13 @@
 
                                 <p class="lp-display lp-bib-num text-center mt-4">{{ str_pad($bibTeam->id, 3, '0', STR_PAD_LEFT) }}</p>
                                 <p class="text-center font-extrabold uppercase tracking-[0.18em] text-sm mt-2 break-words">
-                                    {{ $bibTeam->name }}@if($bibTeam->klasse) · {{ $bibTeam->klasse->name }}@endif
+                                    {{ $bibTeam->name }}
                                 </p>
                                 <p class="lp-muted text-center text-[0.68rem] font-semibold uppercase tracking-[0.22em] mt-1 break-words">
-                                    Disziplin: {{ $bibTeam->klasse->discipline->name ?? 'wird ausgelost' }}
+                                    Von der Klasse: {{ $bibTeam->klasse->name ?? '–' }}
+                                </p>
+                                <p class="lp-muted text-center text-[0.68rem] font-semibold uppercase tracking-[0.22em] mt-1 break-words">
+                                    {{ $bibTeam->klasse->school->name ?? '–' }}
                                 </p>
 
                                 <div class="lp-barcode mt-6"></div>
@@ -716,7 +714,8 @@
                                         class="block text-transparent bg-clip-text bg-gradient-to-r from-teal-300 via-sky-300 to-amber-200">Live. Fair. Schnell.</span>
                                 </h1>
                                 <p class="text-lg md:text-xl text-slate-300 max-w-xl reveal delay-2">
-                                    Das Wettbewerbszentrum für Schulen, Klassen und Teams. Ergebnisse eintragen, Scores automatisch berechnen, Ranglisten in Echtzeit abrufen.
+                                    Die Web-Anwendung, die alles kann – vom Anlegen der Schulen, Klassen und
+                                    Teams bis hin zu Live-Ranglisten, Laufzetteln und Urkunden-Druck.
                                 </p>
                             </div>
                             <div class="flex flex-wrap gap-4 reveal delay-3">
@@ -739,14 +738,6 @@
                                         <line x1="15" y1="12" x2="3" y2="12"></line>
                                     </svg>
                                 </a>
-                            </div>
-                            <div class="flex flex-wrap gap-3 text-sm text-slate-300 reveal delay-4">
-                                <span
-                                    class="tag-chip px-3.5 py-1.5 rounded-full bg-slate-900/70 border border-white/20">Echtzeit Rankings</span>
-                                <span
-                                    class="tag-chip px-3.5 py-1.5 rounded-full bg-slate-900/70 border border-white/20">Automatische Scores</span>
-                                <span
-                                    class="tag-chip px-3.5 py-1.5 rounded-full bg-slate-900/70 border border-white/20">Moderation bereit</span>
                             </div>
                         </div>
 

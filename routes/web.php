@@ -50,6 +50,8 @@ Route::get('/home/live', [HomeController::class, 'liveData'])
     ->middleware('throttle:60,1')
     ->name('home.live');
 
+Route::view('/changelog', 'changelog')->name('changelog');
+
 Route::view('/datenschutz', 'legal.privacy')->name('legal.privacy');
 Route::view('/cookies', 'legal.cookies')->name('legal.cookies');
 Route::view('/nutzungsbedingungen', 'legal.terms')->name('legal.terms');

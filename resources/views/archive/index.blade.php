@@ -7,7 +7,7 @@
 
     {{-- ===================== LIGHT MODE – „Sportfest-Poster“ ===================== --}}
     <div class="light-mode-only -mt-10">
-        <section class="lp-sec-paper relative overflow-hidden pt-28 md:pt-32 pb-20 min-h-screen">
+        <section class="lp-sec-paper relative overflow-hidden pt-16 md:pt-32 pb-20 min-h-screen">
             <div class="lp-lanes absolute inset-0 pointer-events-none" aria-hidden="true"></div>
             <span class="lp-display lp-outline lp-watermark hidden lg:block absolute -right-8 top-16 pointer-events-none"
                   aria-hidden="true">Archiv</span>

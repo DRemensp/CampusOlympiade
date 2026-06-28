@@ -9,6 +9,14 @@ class Comment extends Model
 {
     use HasFactory;
 
+    /**
+     * Aufbewahrungsfrist der IP-Adresse in Tagen (DSGVO).
+     *
+     * WICHTIG: Muss mit der Angabe in der Datenschutzerklärung
+     * (resources/views/legal/privacy.blade.php, §4 und §5) übereinstimmen.
+     */
+    public const IP_RETENTION_DAYS = 30;
+
     protected $fillable = [
         'message',
         'author_name',
@@ -23,6 +31,18 @@ class Comment extends Model
         'moderation_scores' => 'array',
         'moderated_at' => 'datetime',
     ];
+
+    /**
+     * Wurde die IP-Adresse durch die DSGVO-Aufbewahrungsfrist anonymisiert?
+     * True, wenn keine IP mehr vorhanden ist und der Kommentar älter als
+     * die Aufbewahrungsfrist ist (im Gegensatz zu nie erfassten IPs).
+     */
+    public function ipExpired(): bool
+    {
+        return $this->ip_address === null
+            && $this->created_at !== null
+            && $this->created_at->lt(now()->subDays(self::IP_RETENTION_DAYS));
+    }
 
     /**
      * Scope für nur genehmigte Kommentare

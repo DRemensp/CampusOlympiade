@@ -397,6 +397,8 @@
         <div class="text-sm text-gray-400 dark:text-gray-500 transition-colors duration-200">
             <p>© {{ date('Y') }} CampusOlympiade. Alle Rechte vorbehalten.</p>
             <div class="mt-3 flex flex-wrap items-center justify-center gap-3 text-xs">
+                <a href="{{ route('changelog') }}"
+                   class="hover:text-blue-300 dark:hover:text-blue-400 transition-colors duration-200">Was ist neu?</a>
                 <a href="{{ route('legal.privacy') }}"
                    class="hover:text-blue-300 dark:hover:text-blue-400 transition-colors duration-200">Datenschutz</a>
                 <a href="{{ route('legal.cookies') }}"

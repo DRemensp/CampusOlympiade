@@ -5,7 +5,7 @@
 
     {{-- ===================== LIGHT MODE – „Sportfest-Poster“ ===================== --}}
     <div class="light-mode-only -mt-10">
-        <section class="lp-sec-paper relative overflow-hidden pt-24 md:pt-28 pb-20 min-h-screen">
+        <section class="lp-sec-paper relative overflow-hidden pt-16 md:pt-28 pb-20 min-h-screen">
             <div class="lp-lanes absolute inset-0 pointer-events-none" aria-hidden="true"></div>
 
             <div class="container mx-auto px-4 relative z-10 max-w-4xl">
